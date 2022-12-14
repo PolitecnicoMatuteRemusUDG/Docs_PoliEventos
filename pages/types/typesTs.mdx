@@ -19,19 +19,13 @@ export interface UserDetails {
 
 Estos tipos son usados para colocar la información. El que se usa frecuenteme es el campo "id" el cual usamos a la creación de eventos y crear un registro de quien crear el evento.
 
-### PageMeta
-
-```ts
-export interface PageMeta {
-  title: string;
-  description: string;
-  cardImage: string;
-}
-```
-
 ### Evento
 
+La interfaz o las propiedades "Evento" son usadas como dice su nombre, para eventos individuales. Estas propiedades son algunas que tienen en donde sería la creación del evento o la visualización del evento de manera individual en la ruta /eventos/[idEvento].tsx
+
 ```ts
+// Path: ./types/types.ts
+
 export interface Evento {
   nameevent: string;
   description: string;
@@ -45,7 +39,11 @@ export interface Evento {
 
 ### CarrerasGrupos
 
+Estan son las carreras que hay, lo que se tiene es que los valores son arrays de strings. De esta manera se tiene lo que serían los grupos que contienen los grupos.
+
 ```ts
+// Path: ./types/types.ts
+
 export interface CarrerasGrupos {
   BTAD?: string[];
   TPIN?: string[];
@@ -58,19 +56,30 @@ export interface CarrerasGrupos {
 
 ### GruposYCarreras
 
+La interfaz es usada para los registros que se traen en la tabla de "semestres_grupos". La cual contiene los mismos campos que en la tabla.
+Las que son mas importanes son las de carrera y lo que nos interesa saber es el status del grupo del ciclo.
+
 ```ts
+// Path: ./types/types.ts
+
 export interface GruposYCarreras {
   id: number;
   carrera: string;
   grupo: string;
   semestregrupo: string;
   turno: string;
+  status: boolean;
 }
 ```
 
 ### FiltrosEventos
 
+La interfaz de FiltrosEventos es realmente importante ya que maneja lo que sería la estructura de nuestro filtro para la invitación de las personas.
+Este filtro será explicado después en su carpeta y en su función. Pero lo que se puede ver es que va de lo mas general a lo más especifico.
+
 ```ts
+// Path: ./types/types.ts
+
 export interface FiltrosEventos {
   categoriasGenerales: string[];
   turno: string;
@@ -86,7 +95,11 @@ export interface FiltrosEventos {
 
 ### PersonQuery
 
+Esta interfaz es usada para la tabla de PersonQuery el cual tiene los valores más generales para personas. En este caso solo se agrega seccion el cual nos hace referencia a la tabla a la que pertenece a la persona.
+
 ```ts
+// Path: ./types/types.ts
+
 export interface PersonQuery {
   id: number;
   correo: string;
