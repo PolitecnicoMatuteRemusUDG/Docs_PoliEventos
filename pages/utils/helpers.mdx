@@ -1,0 +1,20 @@
+# helpers.ts
+
+Como su nombre lo menciona, este archivo contiene funciones que nos van a ayudar a acompletar ciertos terminos para cualquier operación, algunas van a ser simples funciones u otras van a realizar complejas operaciones las cuales van a devolver datos relevantes para el contexto en el que se piden.
+
+Lo que podemos ver el archivo de **helpers.ts** el cual se encuentra en la siguiente ruta "./utils/helpers.ts", en el cual en este archivo se tienen 10 funciones.
+Unas variantes de otras funciones. Pero todas nos sirven, ya sea para comparar la función a la otra.
+
+## toDateTime - function()
+
+Esta como se menciona, lo que se hace es sacar la fecha y luego convertir la fecha segundos. Esta nos ayuda para tener el tiempo en segundos, después de convertir la fecha a segunndo se devuelve el valor instanciado de fecha.
+
+```js
+// Path: ./utils/helpers.ts
+
+export const toDateTime = (secs: number) => {
+  const t = new Date(); // Unix epoch start.
+  t.setSeconds(secs);
+  return t;
+};
+```

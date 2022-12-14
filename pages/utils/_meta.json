@@ -1,0 +1,11 @@
+{
+  "index": "Introducción",
+  "constants": {
+    "title": "constants.js",
+    "description": "Constantes de la aplicación"
+  },
+  "helpers": {
+    "title": "helpers.ts",
+    "description": "Funciones de ayuda"
+  }
+}

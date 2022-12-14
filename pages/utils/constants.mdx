@@ -1,0 +1,65 @@
+# constants.js
+
+import { Tab, Tabs } from "nextra-theme-docs";
+
+En este archivo contiene lo que serian los valores constantes que son usados en el proyecto. En este caso son las constantes para el envio de correos.
+
+Estos valores constantes usan lo que serían las "variables de ambiente" las cuales se necesitan sacar el archivo **.env.local** el cual ahí estan los valores que se extraen y se colocan en la constancia.
+
+Se usa lo que sería la librería de "dotenv" la cual se instala de la siguiente manera:
+
+<Tabs items={["pnpm", "npm", "yarn"]}>
+  <Tab>```pnpm install dotenv ```</Tab>
+  <Tab>```npm install dotenv ```</Tab>
+  <Tab>```yarn add dotenv ```</Tab>
+</Tabs>
+
+Esta librería se importa de la manera "vieja" si se podría decir así, no es la tipica manera en la que se usa el import y el nombre al que quieres importar. En este caso se importa así:
+
+```js
+// Path: ./utils/constants.js
+
+require("dotenv").config();
+```
+
+## auth
+
+La constante que tiene el nombre de auth el cual aparece de la siguiente manera:
+
+```js
+const auth;
+```
+
+Esta constante es la que se usa en el envio de correos, exactamente para la creación del transportador para el envio de correo.
+
+Lo que se tiene es para el tipo de autenticación que se va a tener que colocar para que se conecte con la cuenta.
+
+    - "Si los datos de autenticación no están presentes, la conexión se considera autenticada desde el principio. De lo contrario, deberá proporcionar el objeto de opciones de autenticación."
+
+```js
+// Path: ./utils/constants.js
+
+const auth = {
+  type: "OAuth2",
+  user: "@TODO-Email",
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  refreshToken: process.env.REFRESH_TOKEN,
+};
+```
+
+Esta constante se termina importando con el module
+
+```js
+// Path: ./utils/constants.js
+
+module.exports = {
+  auth,
+};
+```
+
+Los campos que se extraen del .env.local se van a explicar en la función para crear un transportador.
+
+## Referencias
+
+    - [auth-nodemailer](https://nodemailer.com/smtp/#authentication)
