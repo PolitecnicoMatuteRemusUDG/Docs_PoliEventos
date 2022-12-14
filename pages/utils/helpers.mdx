@@ -2,7 +2,7 @@
 
 Como su nombre lo menciona, este archivo contiene funciones que nos van a ayudar a acompletar ciertos terminos para cualquier operación, algunas van a ser simples funciones u otras van a realizar complejas operaciones las cuales van a devolver datos relevantes para el contexto en el que se piden.
 
-Lo que podemos ver el archivo de **helpers.ts** el cual se encuentra en la siguiente ruta "./utils/helpers.ts", en el cual en este archivo se tienen 10 funciones.
+Lo que podemos ver el archivo de **helpers.ts** el cual se encuentra en la siguiente ruta "./utils/helpers.ts", en el cual en este archivo se tienen 9 funciones.
 Unas variantes de otras funciones. Pero todas nos sirven, ya sea para comparar la función a la otra.
 
 ## toDateTime - function()
@@ -17,4 +17,201 @@ export const toDateTime = (secs: number) => {
   t.setSeconds(secs);
   return t;
 };
+```
+
+## getURL - function()
+
+Esta función como su nombre lo dice, obtiene la URL, este proceso lo hace relativamente sencillo, checa que URL tiene en la variable de ambiente de URL para devolver la URL en la que se esta.
+
+```js
+// Path: ./utils/helpers.ts
+
+export const getURL = () => {
+  const url =
+    process?.env?.URL && process.env.URL !== ""
+      ? process.env.URL
+      : process?.env?.VERCEL_URL && process.env.VERCEL_URL !== ""
+      ? process.env.VERCEL_URL
+      : "http://localhost:3000";
+  return url.includes("http") ? url : `https://${url}`;
+};
+```
+
+## task - function()
+
+La función llamada task es una función que recibe los valores para enviar al correo y generar el codigo QR si es que hay este valor de asistencia en un true.
+
+Ya que el codigo QR se usa para registrar o redireccionar la asistencia relativamente sencillo. Entonces esta función toma los siguientes valores como props de la funcion:
+
+```js
+async function task(
+  email: string,
+  index: number,
+  idevent: number,
+  codigo: number,
+  nombre: string,
+  emailbody?: string,
+  asistencia?: boolean
+) {}
+```
+
+    - email --> El correo que se pasa es al que se va a enviar.
+    - index -->
+    - idevent --> El id del event al que se le esta invitando y tomando la asistencia.
+    - codigo --> Este sería el codigo de la persona a la que se esta invitando.
+    - nombre --> Nombre de la persona a la que se esta invitando.
+    - emailbody --> Esta parametro es opcional, pero tal cual este es el cuerpo del correo que se va a enviar.
+    - asistencia --> Al igual que el parametro anterior, es opcional pero este va a ser el que va a definir si es que se anexa un codigo QR al cuerpo del correo.
+
+El cuerpo de esta función es relativamente sencillo, es un "fetch" a un endpoint del proyecto. El cual es al **/api/sendEmail**. Esta envia una petición tipo POST en la cual lleva el body los parametros que se pidieron como parametros en la función.
+
+```js
+// Path: ./utils/helpers.ts
+
+export async function task(
+  email: string,
+  index: number,
+  idevent: number,
+  codigo: number,
+  nombre: string,
+  emailbody?: string,
+  asistencia?: boolean
+) {
+  await fetch("/api/sendEmail", {
+    method: "POST",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      idevent,
+      codigo,
+      index,
+      nombre,
+      emailbody,
+      asistencia,
+    }),
+  });
+}
+```
+
+**Nota: Luego se explicará el endpoint /api/sendEmail**
+
+## sleepA - function()
+
+Esta función es una función asincrona, la cual es una promesa sencilla, la cual contiene un timeout segun se le indique en el parametro.
+
+```js
+// Path: ./utils/helpers.ts
+
+export async function sleepA(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+```
+
+### sleep - function()
+
+Esta función es una variante de la funcion sleepA, la cual la única diferencia es que la función no es asincrona.
+
+```js
+// Path: ./utils/helpers.ts
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+```
+
+## check - function()
+
+La función check es una función asincrona que se encarga de checar el parametro que se le pase, que en este caso es el parametro un entero.
+
+Lo que se encarga de checar es que el parametro sea dvisible entre 40 y no tenga sobrantes. Si esto se cumple entonces va a mandar a llamar la función **sleepA** la cual manda un timeout para esperar de 3 mins.
+Este timeout es importante en el envio de correos para refrescar los tokens y que se hagan los correos completos.
+
+```js
+// Path: ./utils/helpers.ts
+
+export async function check(index: number) {
+  if (index % 40 === 0 && index !== 0) {
+    console.log("Estamos en el correo:", index);
+    await sleepA(180000);
+    console.log("Ya pasaron 3 minutos");
+    // O convertir el sleep en asyn await
+  }
+}
+```
+
+## categoriaGeneral - function()
+
+Esta función es una funcion la cual se tiene como parametros los siguientes elementos:
+
+    - valores: string[]
+    - exist: string
+
+La cual se encarga de checar que existan en el array de string que es el parametro de **valores** el elemento del parametro **exist**. Esto para checar si es que existe en su array.
+Si es que existe, entonces va a devolver un true y si no va a devolver un false.
+
+```js
+// Path: ./utils/helpers.ts
+
+export const categoriaGeneral = (valores: string[], exist: string) => {
+  if (valores.includes(exist)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+```
+
+Esta función se usa en el componente de filtrado.
+
+## categoriaMultiple - function()
+
+Al igual que la función anterior, esta se usa para checar la categoría multiples. O sea que existan varios valores en un array, no solo en uno.
+
+Este lo que hace es tomar el parametro valores que es un array de strings, e iterar en el siguiente parametro que es **multipleReference** para checar que estos esten en el parametro principal.
+Lo que se tienen para checar si es que tienen valores iguales o unos adentro es un contador, que por lo que se va a querer checar es que por lo menos hay mas de uno o uno. Por lo que si es así va a devolver un true, y si no entonces un false.
+
+```js
+// Path: ./utils/helpers.ts
+
+export const categoriaMultiple = (
+  valores: string[],
+  multipleReference: string[]
+) => {
+  let contador = 0;
+
+  for (let i = 0; i < multipleReference.length; i++) {
+    if (valores.includes(multipleReference[i])) {
+      contador++;
+    }
+  }
+  if (contador > 0) {
+    return true;
+  }
+  return false;
+};
+```
+
+## checkArrayEqual - function()
+
+Función la cual se usa para comparar dos arrays y checar si es que son iguales.
+
+```js
+// Path: ./utils/helpers.ts
+
+export function checkArrayEqual(a: string[], b: string[]) {
+  let n = 0;
+  a.forEach((item) => {
+    if (!b.includes(item)) {
+      return false;
+    } else {
+      n++;
+    }
+  });
+  if (n === a.length) {
+    return true;
+  }
+}
 ```
