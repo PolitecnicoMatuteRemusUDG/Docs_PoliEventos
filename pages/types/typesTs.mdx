@@ -1,0 +1,97 @@
+# types.ts
+
+En el archivo **types.ts** se tienen 8 interfaces las cuales funcionan para diferentes cosas en nuestra aplicación.
+En este archivo se va a buscar explicar todas las interfaces, para que sirven y tambien para que son cada cosa.
+
+### UserDetails
+
+Esta interfaz es la que se aplica en el userContext. El cual contiene lo que serian los datos del usuario de la base de datos. Los cuales están en la tabla "users"
+
+```ts
+// Path: ./types/types.ts
+
+export interface UserDetails {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+```
+
+Estos tipos son usados para colocar la información. El que se usa frecuenteme es el campo "id" el cual usamos a la creación de eventos y crear un registro de quien crear el evento.
+
+### PageMeta
+
+```ts
+export interface PageMeta {
+  title: string;
+  description: string;
+  cardImage: string;
+}
+```
+
+### Evento
+
+```ts
+export interface Evento {
+  nameevent: string;
+  description: string;
+  dateevent: string;
+  starthour: string;
+  endhour: string;
+  placeevent: string;
+  // addressedto: never[];
+}
+```
+
+### CarrerasGrupos
+
+```ts
+export interface CarrerasGrupos {
+  BTAD?: string[];
+  TPIN?: string[];
+  BTGO?: string[];
+  TPTE?: string[];
+  TPBI?: string[];
+  TPMC?: string[];
+}
+```
+
+### GruposYCarreras
+
+```ts
+export interface GruposYCarreras {
+  id: number;
+  carrera: string;
+  grupo: string;
+  semestregrupo: string;
+  turno: string;
+}
+```
+
+### FiltrosEventos
+
+```ts
+export interface FiltrosEventos {
+  categoriasGenerales: string[];
+  turno: string;
+  seleccionGrupos: { carrera: string }[];
+  departamentos: string[];
+  personasEspecificas: {}[];
+  gruposEspeficos: { carrera: string }[];
+  carreras: string[];
+  seleccionCarrera: boolean;
+  checkGrupos: boolean;
+}
+```
+
+### PersonQuery
+
+```ts
+export interface PersonQuery {
+  id: number;
+  correo: string;
+  codigo: number;
+  nombre: string;
+  seccion: string;
+}
+```
