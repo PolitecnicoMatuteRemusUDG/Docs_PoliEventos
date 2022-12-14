@@ -1,0 +1,103 @@
+# supabase-client.ts
+
+En este archivo lo que se tiene, son varias cosas, mas que nada funciones que interactuan con la instancia de createBrowserSupabaseClient. Las cuales son muy importantes
+para lo que sería la interacción y acciones de nuestro proyecto.
+
+Lo principal que podemos resaltar es la instancia que se genera de **createBrowserSupabaseClient** la cual se usa para mandar a llamar a la base de datos y otras acciones.
+Esto se crear de la siguiente manera:
+
+```js
+import {
+  createBrowserSupabaseClient,
+  User,
+} from "@supabase/auth-helpers-nextjs";
+
+export const supabase = createBrowserSupabaseClient();
+```
+
+## setUserProfile - function()
+
+Se crea el evento en la tabla events
+Luego se obtiene sus datos de regreso. Esto para obtener el id que se coloco en la base de datos
+
+Los tipos de datos en la base de datos o los que tienen en la columna son los siguientes:
+
+    - id: uuid
+     - nameevent: text
+     - description: varchar
+     - created_at: timestampz
+     - emailbody: varchar (Cuerpo del correo)
+     - addressedto: text[] (Arreglo de correos)
+     - dateevent: date
+     - starthour: timestampz
+     - endhour: timestampz
+     - placeevent: text
+     - emailsend: booleans
+     - asistencia: boolean
+
+Con el "id" de la tabla events se crea el evento en la tabla "events_users".
+Extrameos el id del data.
+
+```js
+// Path: ./utils/supabase-client.ts
+
+export const crearEvento = async (event: any, currentUser: User) => {
+  let personastotales: [] = await getPersonas(event.addressedto);
+  console.log("Personas a invitar", personastotales);
+  const { data, error } = await supabase
+    .from("events")
+    .insert([
+      {
+        nameevent: event.nameevent,
+        description: event.description,
+        emailbody: JSON.stringify(event.htmlBody),
+        dateevent: event.dateevent,
+        starthour: event.starthour,
+        endhour: event.endhour,
+        addressedto: event.addressedto,
+        placeevent: event.placeevent,
+        emailsend: event.checkEmail,
+        asistencia: event.asistencia,
+      },
+    ])
+    .select()
+    .single();
+
+  const idevent = data.id;
+  const iduser = currentUser.id;
+
+  await supabase.from("events_users").insert([
+    {
+      idevent: idevent,
+      iduser: iduser,
+      emails: event.checkEmail,
+      personastotales: personastotales.length,
+    },
+  ]);
+
+  return idevent;
+};
+```
+
+## getPersonas - functions
+
+En el archivo podemos encontrar dos funciones muy similares, cambian lo que serian muy pocas cosas, pero estas dos variantes se usan,
+esto de alguna manera nos ayuda a distinguir para que es cada función.
+
+Las dos funciones se utilizan iguales pero en contextos diferentes. Esto se hizo porque las funciones se utilizan de manera igual.
+Estás dos funciones son asincronas.
+Las funciones que se usan son las siguientes:
+
+    - getPersonas()
+    - getPersonas_2()
+
+La unica diferencia entre la una y la otra es un parametro demás. La cual es parametro que diferencia es el que se usa para mandar a llamar los datos de la base de datos.
+
+#### ¿Por qué se hace esto?
+
+Esto se hace porque se colocaron RLS en la base de datos. Entonces a la hora de mandar a llamar lo que sería la función en la ruta para checar los invitados del evento. Esta no jala nada. Porque no detecta ningun usuario de la instancia de supabase-client.
+Es por esto que la función llamada **getPersonas_2** tienen el parametro de supabase, el cual es que se usa para mandar a llamar al usuario y detecta el rol. Es por eso que se hizo esta solución muy poco reutilizable.
+
+### Referencias
+
+    - [Supabase Auth with Next.js Server Components](https://supabase.com/docs/guides/auth/auth-helpers/nextjs-server-components)

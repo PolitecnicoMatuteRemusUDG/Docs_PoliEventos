@@ -1,0 +1,6 @@
+{
+  "getPersonas": {
+    "title": "getPersonas()",
+    "description": "Función que obtiene los invitados al eventos de la base de datos"
+  }
+}

@@ -1,0 +1,19 @@
+# supabase-admin.ts
+
+En este archivo se crear una instancia para supabaseAdmin.
+
+```js
+// Path: ./utils/supabase-admin.ts
+
+import { createClient, User } from '@supabase/supabase-js';
+
+require('dotenv').config();
+
+// Create a single supabase client for interacting with your database
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
+);
+
+export { supabaseAdmin };
+```

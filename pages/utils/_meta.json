@@ -7,5 +7,13 @@
   "helpers": {
     "title": "helpers.ts",
     "description": "Funciones de ayuda"
+  },
+  "supabase-admin": {
+    "title": "supabase-admin.ts",
+    "description": "Instancia de Supabase Admin"
+  },
+  "supabase-client": {
+    "title": "supabase-client.ts",
+    "description": "Instancia de Supabase Client"
   }
 }
