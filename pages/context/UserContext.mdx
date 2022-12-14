@@ -1,0 +1,75 @@
+# UserContext
+
+## ¿Para que sirve el "context" en react?
+
+Context está diseñado para compartir datos que pueden considerarse “globales” para un árbol de componentes en React, como el usuario autenticado actual, el tema o el idioma preferido.
+Esto nos ayuda a no pasar "props" a través de los componentes o elementos.
+
+## ¿En qué no ayuda nuestro "UserContext"?
+
+Este contexto nos ayuda a mantener los datos para que no se pasen a través de los componentes, tambien nos ayuda a no crear instancias para mandar a llamar nuestros datos.
+Esto para no hacer peticiones inncesarias, más de las que ya existen.
+
+## Codigo
+
+En este archivo lo que se tiene son dos sencillos bloques. Los cuales serían:
+
+     - Los tipos o la interfaz para el contexto.
+     - Creación del contexto
+
+La interfaz que se tiene es la siguiente:
+
+```ts
+// Path: ./context/UserContext.ts
+type UserContextType = {
+  accessToken: string | null;
+  user: User | null;
+  userDetails: UserDetails | null;
+  isLoading: boolean;
+};
+```
+
+El elemento que se termina usando y al final exportando es el contexto el cual se crea de la siguiente manera con el **createContext** de React.
+Este **createContext** nos permite crear un contexto que los componentes pueden proveer o leer. Algo asi se puede usar para crear uno:
+
+```js
+const SomeContext = createContext(defaultValue);
+```
+
+Entonces con la explicación anterior, asi se crea nuestro **userContext**
+
+```js
+// Path: ./context/UserContext.ts
+export const UserContext =
+  (React.createContext < UserContextType) | (undefined > undefined);
+```
+
+Ya sea para proveer datos o leer datos con este contexto se peuede usar de la siguiente manera:
+
+```js
+// Proover datos
+function App() {
+  const [theme, setTheme] = useState("light");
+  // ...
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Page />
+    </ThemeContext.Provider>
+  );
+}
+```
+
+```js
+// Leer datos
+function Button() {
+  const theme = useContext(ThemeContext);
+  return <button className={theme} />;
+}
+```
+
+### Referencias
+
+    - [Context](https://es.reactjs.org/docs/context.html#gatsby-focus-wrapper)
+    - [createContext](https://beta.reactjs.org/apis/react/createContext)
+    - [context.provider](https://beta.reactjs.org/apis/react/createContext#provider)
+    - [context.consumer](https://beta.reactjs.org/apis/react/createContext#provider)
