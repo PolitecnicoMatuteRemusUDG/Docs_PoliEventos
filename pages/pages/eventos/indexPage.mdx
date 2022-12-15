@@ -1,0 +1,58 @@
+# index.tsx
+
+En esta pagina lo que se tiene es una simple visualización de los eventos que se han creado.
+
+Se mandan a llamar los eventos de la base de datos
+
+Especificamente se manda a llamar lo que serían los datos de la tabla "events_users". La cual contiene el id del evento y el id de la persona quien lo creo. Pero podemos acceder a los datos del evento de la siguiente manera que se presenta después en el getServerSideProps.
+
+El cual lo que dice es: "De la foreignKey que tienes relación, me va a dar los datos de esta"
+
+```js
+select(idevent(*))
+```
+
+Codigo del getServerSideProps
+
+```js
+export async function getServerSideProps() {
+  const { data: eventos, error } = await supabase
+    .from("events_users")
+    .select("*, idevent(*), iduser");
+  if (error) {
+    throw new Error(error.message);
+  }
+  console.log(eventos);
+
+  console.log(eventos);
+  return {
+    props: {
+      eventos,
+    },
+  };
+}
+```
+
+Ya una vez que traigamos los eventos al componente que se va a renderizar, lo que vamos a hacer es una comparación sencilla.
+
+La cual lo que hace es checar que existan eventos en los props del componente:
+
+```js
+export default function Eventos({ eventos }: any)
+```
+
+Esta condición se checa lo que sería si existen eventos en el array que devuelve checando la longitud del array. Si es que se cumple la siguiente condición, va a devolver los eventos. Si no hay entonces va a devolver un cartel que diga que no hay eventos.
+
+```js
+{eventos.length > 0 ? ( Mapeamos los eventos y los devolvemos ) : ( Se devuelve un cartel donde dice que no hay eventos )}
+```
+
+Si es que existen eventos, lo que va a retornar va a ser un componente que diga los detalles del evento y tenga un botón para ir al evento y checar con más detalle.
+Este botón lo que toma es el id del evento y asi lo lleva como prop de la siguiente manera cuando se usa el router para ir a otra ruta.
+
+```js
+let router =  useRouter();
+...
+...
+onClick={()=>router.replace(`${/eventos/idevent}`)}
+```

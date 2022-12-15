@@ -1,0 +1,131 @@
+# crearEvento.tsx
+
+En esta ruta, se ingresan los datos para crear el evento. Para los valores de los formularios se tienen lo siguiente:
+
+```js
+const form = useForm({
+  initialValues: {
+    nameEvent: "",
+    description: "",
+    dateEvent: "",
+    startHour: "",
+    endHour: "",
+    query: "",
+    placeEvent: "",
+  },
+});
+```
+
+Aunque tambien se define estados individuales.
+
+```js
+  const [value, setvalue] = useState('');
+  const [query, setQuery] = useState({} as FiltrosEventos);
+  const [correoCheck, setCorreoCheck] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submitButton, setSubmitButton] = useState(false);
+  const [personasInvitadas, setpersonasInvitadas] = useState([] as any);
+  const [asistencia, setAsistencia] = useState(false);
+```
+
+La función que se define como "crearEvento, esta lo que hace es mandar a llamar lo que sería al endpoint de /api/crearEvento, con los valores obtenidos y crea el evento.
+
+Esta parte del codigo sería nada más para crear el evento. El cual contiene lo que serían los valores colocados en los inputs.
+
+```js
+    const valores = {
+      ...valoresInputs,
+      addressedTo: query,
+      checkEmail: correoCheck,
+      htmlBody: value,
+      asistencia: asistencia,
+    };
+    ...
+    ...
+    try {
+      const result = await fetch('/api/crearEvento', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(valores),
+      });
+```
+
+Pero según dos valores son los que van a depender de que se continue en la función.
+Estos elementos van a decidir si se va a registrar la asistencia a las personas invitadas. El otro va a ser si se va a querer enviar correos a cada persona para notificarle del evento.
+
+Con esto lo que se hace es hacer una nueva promesa la cual cuando se resuelve se ejecuta el codigo para checar si es que hay asistencia. Si el valor es un true, entonces se va a registrar una fila para registrar la asistencia luego.
+
+```js
+if (asistencia) {
+  const { data } = await supabase
+    .from("event_attendance")
+    .insert([
+      {
+        idPerson: person.id,
+        idEvent: idEvent,
+        tabla: person.seccion,
+        asistencia: false,
+        codigo: person.codigo,
+      },
+    ])
+    .select("*");
+}
+```
+
+El otro elemento es para checar si es que se va a enviar lo que sería el correo. El cual después de checar que si se va a tener que enviar varios correos de parte de ese evento, vamos a checar si hay la disponibilidad de enviar los correos.
+
+Esto porque se tiene un limite de 2000 correos al dia por enviar. Entonces esto se hace para enviar correos hasta donde se pueda. Si es que se pasa el el limite, entonces se guarda en que persona se quedo, para luego retomar el envio de correo.
+
+```js
+if (correoCheck) {
+              if (correosHoy.data.emailsent < 1999 && variableIndependinet) {
+                console.log('Si se va a enviar un correo');
+                contador = contador + 1;
+                await check(index);
+                await supabase
+                  .from('emails')
+                  .update({
+                    emailsent: correosHoy.data.emailsent + 1,
+                  })
+                  .eq('inserted_at', new Date().toISOString().slice(0, 10));
+                let emailBody = valores.htmlBody;
+                return task(
+                correo,
+                  index,
+                  idEvent,
+                  person.codigo,
+                  person.nombre,
+                  emailBody,
+                  asistencia
+                );
+              } else {
+                console.log('No se va a enviar un correo');
+                if (valorRegistrado == '') {
+                  let { data } = await supabase
+                    .from('events_users')
+                    .update({
+                      correosEnviados: contador,
+                      tablaIndex: person.seccion,
+                      codigoIndex: person.codigo,
+                      index: index,
+                    })
+                    .eq('idEvent', idEvent)
+                    .select('*');
+                  console.log(data);
+
+                  valorRegistrado = 'No se enviaron correos';
+                } else {
+                  console.log('Ya se registro el index');
+                }
+```
+
+Lo que se tienen que tomar en cuenta que el envio de correos va a de 40 en 40 hasta completar el envio de correos para ese evento o llegar el limite del dia. Pero en este proceso se descansa 3 mins cuando se llega a un numero divisble entre 40.
+
+Esto para aprovechar el envio de correo gratuito.
+
+## Referencias
+
+- [use-form](https://mantine.dev/form/use-form/)

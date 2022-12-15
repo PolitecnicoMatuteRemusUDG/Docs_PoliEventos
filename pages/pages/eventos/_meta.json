@@ -1,0 +1,11 @@
+{
+  "index": {
+    "title": "Introducción - Eventos"
+  },
+  "indexPage": {
+    "title": "index.tsx"
+  },
+  "crearEvento": {
+    "title": "crearEvento.tsx"
+  }
+}
