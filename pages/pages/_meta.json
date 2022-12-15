@@ -7,5 +7,8 @@
   },
   "document": {
     "title": "_document.tsx"
+  },
+  "login": {
+    "title": "login.tsx"
   }
 }

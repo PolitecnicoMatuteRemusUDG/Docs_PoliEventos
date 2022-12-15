@@ -1,0 +1,81 @@
+# login.tsx
+
+En esta ruta del login se utiliza lo que serían los "auth-helpers" de supabase. La cual es una librería que facilite el trabajo de
+la autenticación con supabase. Esto nos ayuda a no reinventar la rueda.
+
+Se usan los siguientes modulos de esta libreria:
+
+```js
+import { useUser, useSessionContext } from "@supabase/auth-helpers-react";
+```
+
+En esta ruta se tienen dos formas de iniciar sesión:
+
+    1 - Correo y Contraseña
+    2 - Magic link: Este envia un link el cual inicia sesión de manera rápida.
+
+Para lograr esto se colocaron 4 estados (useState) el cual como dice su nombre, guarda el estado o valores.
+
+```js
+  // Estado para email
+  const [email, setEmail] = useState('');
+  // Estado para password
+  const [password, setPassword] = useState('');
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Estado para mensaje que se va a mostrar segun el estado del login
+  const [message, setMessage] = useState<{ type?: string; content?: string }>({
+    type: '',
+    content: '',
+  });
+
+```
+
+Entonces con los valores ingresados y ya sea que opción se quiera, va a iniciar sesión o enviar un correo. Una vez ingresado esto se va a guardar en el **useUser** el cual va a guardar los datos del
+usuario logeado. Esto para saber si es que existe un usuario logeado.
+
+El inicio de sesión se lleva acabo con una funcón llamada **handleSignin** la cual usa diferentes funciones de supabase
+
+```js
+// Se extrae el ciente de supabase del contexto para usar el contexto y sus metodos
+const { supabaseClient } = useSessionContext();
+
+const handleSignin = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  setLoading(true);
+  setMessage({});
+
+  let error;
+  if (!password) {
+    const res = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: getURL() },
+    });
+    error = res.error;
+  } else {
+    const res = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+    error = res.error;
+  }
+  if (error) {
+    setMessage({ type: "error", content: error.message });
+  }
+  if (!password) {
+    setMessage({
+      type: "note",
+      content: "Revisa tu correo para el enlace mágico",
+    });
+  }
+  setLoading(false);
+};
+```
+
+Una vez que se detecte que se inicio sesión. Este va a redireccionar a la ruta principal. Lo que va a cambiar es que ya va a existir un usuario logeado.
+
+## Referencias
+
+    - [auth-helpers](https://supabase.com/docs/guides/auth/auth-helpers)
