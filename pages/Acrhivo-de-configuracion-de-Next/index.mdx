@@ -1,0 +1,31 @@
+# next.config.js
+
+En este archivo se tienen las configuraciones, parametros del proyecto que esta hecho en next js.
+
+Lo cuales serían las configuraciones que se pueden observar ya sea programando o en el producto final.
+
+```js
+// Path: ./next.config.js
+
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+module.exports = withBundleAnalyzer({
+  reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    domains: [
+      "api.qrserver.com",
+      "picsum.photos",
+      "mwkvfsbmbtssygowxwlh.supabase.co",
+    ],
+  },
+});
+```
+
+### Referencias
+
+    - [next.config.js - Next.js](https://nextjs.org/docs/api-reference/next.config.js/introduction)
