@@ -1,0 +1,52 @@
+# .env.local
+
+Este archivo es el cual se usa para guardar las variables de entorno que se usan en la aplicación.
+
+En esta aplicación se tienen 8 variables de entorno que se usan.
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+PORT
+CLIENT_ID
+CLIENT_SECRET
+REDIRECT_URI
+REFRESH_TOKEN
+```
+
+## Variables para la base de datos
+
+### NEXT_PUBLIC_SUPABASE_URL
+
+En esta variable de entorno se va a colocar la URL del proyecto en supabase. Se puede obtener de la siguiente manera.
+
+### NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+La llave api publica anonima, esta es usada para conectar a la base de datos.
+
+### SUPABASE_SERVICE_ROLE_KEY
+
+Esta es la llave privada que se usa para tener acceso con más privilegios por no decir el del administrador.
+
+## Varibles para el envio de correos
+
+### PORT
+
+El puerto en el que se busca salir el correo. De manera default se busca que este puerta tenga el valor de **8000**
+
+### CLIENT_ID
+
+El id del cliente para gmail.
+
+### CLIENT_SECRET
+
+LLave para conectar a la cuenta
+
+### REDIRECT_URI
+
+**https://developers.google.com/oauthplayground/**
+
+### REFRESH_TOKEN
+
+Variable que se usa para refrescar el token y poder enviar correos cada vez.
