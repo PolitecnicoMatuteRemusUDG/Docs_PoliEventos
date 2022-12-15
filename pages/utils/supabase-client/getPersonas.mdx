@@ -2,8 +2,6 @@
 
 Con la explicación de porque se colaron dos funciones iguales solo agregando un parametro a otra, vamos a explicar como se obtienen las personas y como funciona esta función.
 
-##
-
 Primero podemos ver en el siguiente codigo de que pide la función
 
 ```js
@@ -29,4 +27,10 @@ export interface FiltrosEventos {
 Si podemos representar la función en una imagen sería la siguiente. Pero en pocas palabras lo que hace es checar primero de arriba para abajo.
 Lo que sería las categorias generales, y de las categorias generales a las más especificas.
 
-@TODO\_ Hacer ilustración
+El filtro más largo es el de alumno, pero practicamente en pocas palabras lo que hace es lo siguiente:
+
+- Checa si hay una categoria más especifica, si no hay entonces anexa los datos traidos en el array persona y se va a la otra cateogria general si es que hay.
+- Si es que si hay una categoria abajo que la anterior entonces se va a la categoría y filtra los valores según la categoría. Por ultimo se anexa. a persona
+- Pero si hay una más especifica, entonces esta se vuelve a repetir los estos pasos. Todo esto hasta alcanzar a la ultima categoria de alumnos que es la de grupos especificos.
+
+Ya una vez pasados todas las categorías generales, se termina devolviendo lo que sería el array personas que son todas las personas filtradas segun las categorías seleccionadas.
