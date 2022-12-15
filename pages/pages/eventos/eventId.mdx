@@ -1,1 +1,85 @@
 # [eventId].tsx
+
+En esta ruta lo que se hace es tomar el idEvent, este idEvent se va a tomar lo que sería el id que identifica al evento. Con esto se va a mandar a llamar al evento para obtener sus datos con el siguiente codigo:
+
+```js
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const eventId = context.params?.eventId;
+  const { data: evento, error } = await supabase
+    .from("events_users")
+    .select("*, idEvent(*), idUser")
+    .eq("idEvent", eventId);
+  // console.log(evento);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return {
+    props: {
+      evento,
+    },
+  };
+};
+```
+
+En la función del componente lo que hace es checar el rol del usuario actual que esta logeado. Este se consigue de la siguiente manera:
+
+```js
+function eventId({ evento }: any) {
+...
+  const user = useUser();
+...
+}
+```
+
+Esta constante se usa lo que sería en el retorno de la función del componente, el cual checa la propiedad de role del contexto del usuario.
+
+```js
+{user.typeAccount === 'admin' || user.typeAccount === 'mod' ? (
+    Va a mostrar botones ) : ( No va  mostrar nada) }
+```
+
+Pero tambien se coloca lo siguiente es que para ver las personas invitadas.
+
+Esto el codigo es el siguiente:
+
+```js
+{
+  user.typeAccount === "admin" || user.typeAccount === "mod" ? (
+    <Group
+      sx={{
+        marginTop: 15,
+        display: "flex",
+        justifyContent: "flex-end",
+      }}
+    >
+      {evento[0].idEvent.asistencia ? (
+        <Button
+          onClick={() => {
+            router.push(`/eventos/${eventId}/invitados`);
+          }}
+        >
+          Ver personas invitadas
+        </Button>
+      ) : (
+        <></>
+      )}
+      <Button
+        onClick={() => router.push(`/eventos/${eventId}/edit`)}
+        variant="outline"
+      >
+        Editar evento
+      </Button>
+      <Button
+        //onClick={() => router.push(`/eventos/${eventId}/delete`)}
+        variant="outline"
+        color={"red"}
+      >
+        Eliminar evento
+      </Button>
+    </Group>
+  ) : (
+    <></>
+  );
+}
+```

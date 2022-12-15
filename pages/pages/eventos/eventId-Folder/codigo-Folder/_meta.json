@@ -1,0 +1,11 @@
+{
+  "index": {
+    "title": "Introducción"
+  },
+  "indexPage": {
+    "title": "index.tsx"
+  },
+  "asistencia": {
+    "title": "asistencia.tsx"
+  }
+}
