@@ -15,5 +15,9 @@
   "supabase-client": {
     "title": "supabase-client.ts",
     "description": "Instancia de Supabase Client"
+  },
+  "useUser": {
+    "title": "useUser.ts",
+    "description": "Hook para obtener el usuario actual"
   }
 }

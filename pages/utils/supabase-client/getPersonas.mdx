@@ -1,3 +1,32 @@
 # getPersonas - Explicación de la función
 
-Con la explicación de porque se colaron dos funciones iguales solo agregando un parametro a otra, vamos a explicar como se obtienen las personas.
+Con la explicación de porque se colaron dos funciones iguales solo agregando un parametro a otra, vamos a explicar como se obtienen las personas y como funciona esta función.
+
+##
+
+Primero podemos ver en el siguiente codigo de que pide la función
+
+```js
+export const getPersonas = async (query: FiltrosEventos) => {};
+```
+
+Esta nos pide lo que sería un objeto con el filtro, el filtro o la interfaz la tenemos en el path **./types/types.ts** el cual es el siguiente:
+
+```ts
+export interface FiltrosEventos {
+  categoriasGenerales: string[];
+  turno: string;
+  seleccionGrupos: { carrera: string }[];
+  departamentos: string[];
+  personasEspecificas: {}[];
+  gruposEspeficos: { carrera: string }[];
+  carreras: string[];
+  seleccionCarrera: boolean;
+  checkGrupos: boolean;
+}
+```
+
+Si podemos representar la función en una imagen sería la siguiente. Pero en pocas palabras lo que hace es checar primero de arriba para abajo.
+Lo que sería las categorias generales, y de las categorias generales a las más especificas.
+
+@TODO\_ Hacer ilustración

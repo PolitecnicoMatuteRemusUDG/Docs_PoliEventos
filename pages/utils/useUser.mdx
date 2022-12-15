@@ -1,0 +1,24 @@
+# useUser - Contexto del usuario
+
+Este archivo hace referencia al contexto del usuario, el cual tiene como nombre "useUser", no se tiene que confundir con el "useUser" de la librería de "@supabase". Ya que en el archivo se importa pero se cambia el nombre a "useSupabaseUser" el cual es el usuario autenticado/logeado.
+
+Tenemos que tener en cuenta que los datos de este contexto son relevantes para los datos del front-end. Ya que son necesarios para no hacer llamadas tan frecuentes cuando se inicie en la cuenta de la persona. También para identificar los atributos de las cuentas. Ya que solo este contexto va a ser usado para las cuentas o personas "logeadas" a la página, las cuales van a ser meramente administrativos o profesores. Y si en dado caso extraodinario, también existirán cuentas **temporales** para alumnos que ya sean prestadores de servicio, becarios, prestadores de practicas o también alumnos que sean colocados para ayudar.
+
+## Importaciones y tipos
+
+Las importaciones principales que se usan en el archivo y en la creacion de contexto, son de las siguientes librerias o modulos:
+
+- React
+- @supabase/auth-helpers-react
+
+Las que son mas relevantes son las de la segunda libreria, las cuales se trae una función que nos trae el contexto del usuario, el contexto de la sesion actual, y una interfaz para el usuario, esta ultima entraría en los tipos. Se define un tipo el cual es usado para el tipado para el contexto del usuario, este tiene como nombre "UserContextType"
+
+## Estructura del archivo
+
+El archivo define dos cosas, primero se crea el contexto con el tipado de "UserContextType" el cual es usado para definir los props que va a tener, este contexto el cual es llamado "UserContext" va a ser usado en el provider.
+
+Después, dejando de lado la interfaz de los props, se define una funcion de flecha, la cual esta tiene como el nombre **MyUserContextProvider**. Esta como su nombre se refiere, va a ser el provider o el que va a "envolver" a los componentes hijos que van a usar los datos del contexto. Es por eso que se exporta esta constante. Esta "arrow function" tiene varios "states" y valoreslos cuales se sacan de contexto de la sessión con el metodo "useSessionContext".
+
+- **MyUserContextProvider**: Adentro de esta funcion se tienen varios contextos y varias cosas las cuales son usadas luego en el useEffect que recarga en cualquier cambio del "user" o "isLoading". En el useEffect de la "arrow function", se realiza una condicion la cual va a ser llamada siempre y cuando haya un cambio en el "user" o en el "isLoding", si hay, entonces va a llamar a la condicion la cual va a comparar primero si existe un usuario logeado, luego que no este true la variable de "isLoading" y que no tenga "userDetails". Si se cumple esta condición, se va a instansear una promesa que va a ejecutar un metodo el cual revisa que todas las promesas se hayan cumplido de la función o funciones se que se coloquen, después vamos a obtener los datos y colocarlos en el estado de "userDetails. Si no se cumple la condición, entonces va a poner los el estado "userDetails" como nulo. Por ultimo se coloca en el contexto los valores que va a tener el contexto, que va a ser algo así: "UserContext.Provider" y adentro sus valores.
+
+- **useUser**: Esta función va a mandar a llamar el contexto, el cual sería "useContext(UserContext)", esta fución su propósito va a ser mandar a llamar el contexto para luego devolverlo, todo esto para que se pueda usuar nada más llamando a la función, para no agregar lineas de código de más.

@@ -98,6 +98,25 @@ La unica diferencia entre la una y la otra es un parametro demás. La cual es pa
 Esto se hace porque se colocaron RLS en la base de datos. Entonces a la hora de mandar a llamar lo que sería la función en la ruta para checar los invitados del evento. Esta no jala nada. Porque no detecta ningun usuario de la instancia de supabase-client.
 Es por esto que la función llamada **getPersonas_2** tienen el parametro de supabase, el cual es que se usa para mandar a llamar al usuario y detecta el rol. Es por eso que se hizo esta solución muy poco reutilizable.
 
+## eliminaDuplicados - function()
+
+Esta función se encarga de eliminar elementos duplicados en el array.
+
+```js
+// Path: ./utils/supabase-client.ts
+
+export const eliminaDuplicados = (arr: string[]) => {
+  const unicos: string[] = [];
+  arr.forEach((elemento) => {
+    if (!unicos.includes(elemento)) {
+      unicos.push(elemento);
+    }
+  });
+
+  return unicos;
+};
+```
+
 ### Referencias
 
     - [Supabase Auth with Next.js Server Components](https://supabase.com/docs/guides/auth/auth-helpers/nextjs-server-components)
