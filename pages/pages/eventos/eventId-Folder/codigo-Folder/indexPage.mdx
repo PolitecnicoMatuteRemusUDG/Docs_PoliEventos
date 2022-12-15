@@ -1,1 +1,73 @@
 # index.tsx
+
+Esta ruta es lo mismo que el correo que se le va a enviar. Tiene el codigo QR para el usuario.
+
+```js
+
+export const getServerSideProps = withPageAuth({
+  redirectTo: '/foo',
+  async getServerSideProps(context) {
+    // Access the user object
+    const { codigo, eventId } = context.query;
+
+    // Obtenemos la invitación en la tabla para poder sacar el id de la persona en su tabla
+    const { data } = await supabase
+      .from('event_attendance')
+      .select('*')
+      .match({ idEvent: eventId, codigo: codigo })
+      .single();
+    // @TODO - Sobreescribir esta parte
+    let personaBuscada = {} as any;
+    if (data.tabla === 'ALUMNO') {
+      personaBuscada = await supabase
+        .from('alumnos')
+        .select('*')
+        .match({ id: data.idPerson })
+        .single();
+    }
+
+    if (data.tabla === 'PROFESOR') {
+      personaBuscada = await supabase
+        .from('profesores')
+        .select('*')
+        .match({ id: data.idPerson })
+        .single();
+    }
+
+    if (data.tabla === 'OPERATIVO') {
+      personaBuscada = await supabase
+        .from('operativos')
+        .select('*')
+        .match({ id: data.idPerson })
+        .single();
+    }
+
+    if (data.tabla === 'ADMINISTRATIVO') {
+      personaBuscada = await supabase
+        .from('administrativos')
+        .select('*')
+        .match({ id: data.idPerson })
+        .single();
+    }
+    console.log(personaBuscada);
+
+    return {
+      props: {
+        data,
+      },
+    };
+  },
+  authRequired: true,
+});
+```
+
+Este igual que la ruta de asistencia, se obtiene lo que sería los datos con su codigo.
+Y asi con estos genera un codigo QR el cual cualquiera lo puede ver ya que no se necesita permisos.
+
+```js
+<Image
+  width={250}
+  height={250}
+  src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://eventos-poli-nxt-f1gq.vercel.app/eventos/${eventId}/${codigo}/asistencia`}
+/>
+```

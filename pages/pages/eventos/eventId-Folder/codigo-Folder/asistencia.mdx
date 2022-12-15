@@ -1,0 +1,119 @@
+# asistencia.tsx
+
+En esta ruta lo que se hace es tomar las rutas anteriores que son el codigo y el eventId
+Algo así:
+
+```
+/eventos/[eventId]/codigo/asistencia
+```
+
+Esta ruta se usa para colocar la asistencia usando los dos valores anteriores.
+Pero para colocar, primero se necesita sacar de que tabla es el codigo al que pertence la persona para sacar si id de su tabla y asi buscar. Entonces lo que se pone en el getServerSideProps es lo siguiente:
+
+```js
+
+export const getServerSideProps: GetServerSideProps = withPageAuth({
+  redirectTo: '/login',
+  async getServerSideProps(context) {
+    // Access the user object
+    // Por alguna razon con el supabase de utils no nos da el id del usuario
+    const supabase = createServerSupabaseClient(context);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // Get the user from the database
+    const user = await supabase.from('users').select('*').eq('id', session?.user?.id).single();
+
+    // Check if the user is an admin
+    if (user.data?.role === 'admin' || user.data?.role === 'mod') {
+      const { codigo, eventId } = context.query;
+      let asistencia = await (
+        await supabase.from('events').select('*').eq('id', eventId).single()
+      ).data.asistencia;
+
+      if (asistencia) {
+        const { data } = await supabase
+          .from('event_attendance')
+          .select('*')
+          .match({ idEvent: eventId, codigo: codigo })
+          .single();
+        // @TODO - Sobreescribir esta parte
+        let personaBuscada = {} as any;
+        if (data.tabla === 'ALUMNO') {
+          personaBuscada = await supabase
+            .from('alumnos')
+            .select('*')
+            .match({ id: data.idPerson })
+            .single();
+        }
+
+        if (data.tabla === 'PROFESOR') {
+          personaBuscada = await supabase
+            .from('profesores')
+            .select('*')
+            .match({ id: data.idPerson })
+            .single();
+        }
+
+        if (data.tabla === 'OPERATIVO') {
+          personaBuscada = await supabase
+            .from('operativos')
+            .select('*')
+            .match({ id: data.idPerson })
+            .single();
+        }
+
+        if (data.tabla === 'ADMINISTRATIVO') {
+          personaBuscada = await supabase
+            .from('administrativos')
+            .select('*')
+            .match({ id: data.idPerson })
+            .single();
+        }
+
+        let pesona = personaBuscada.data;
+        return {
+          props: {
+            data: data,
+            pesona: pesona,
+          },
+        };
+      }
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    } else {
+      console.log('No es admin');
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  },
+  authRequired: true,
+});
+```
+
+Primero se tiene que checar el role del usuario actual, ya que solo administradores o moderadores pueden entrar a poner asistencia.
+
+Luego se obtienen los parametros de la ruta, y se obtiene lo que sería la fila de la tabla de "events_attendance" la cual tiene el valor para colocar la asistencia.
+Con estos dos, podemos obtener de que tabla pertenece el usuario, pero esto es meramente para la visualización. Lo que importa es que con el codigo del usuario se puede cambiar el estatus de la asistencia.
+
+El cual esto se hace con la siguiente función la cual se coloca en un botón.
+
+```js
+const ponerAsistencia = async (id: number) => {
+  await supabase
+    .from("event_attendance")
+    .update({ asistencia: true })
+    .eq("id", id);
+  console.log("Asistencia puesta");
+
+  router.reload();
+};
+```
