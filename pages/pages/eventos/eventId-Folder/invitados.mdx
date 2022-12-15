@@ -1,1 +1,61 @@
 # invitados.mdx
+
+En esta ruta lo que se se ve son una tabla con los invitados al evento.
+
+Estos se obtienen de la siguiente manera:
+
+```js
+export const getServerSideProps: GetServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(context) {
+    // Access the user object
+    // Por alguna razon con el supabase de utils no nos da el id del usuario
+    const supabase = createServerSupabaseClient(context);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // Get the user from the database
+    const { eventId } = context.query;
+    const user = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session?.user?.id)
+      .single();
+
+    // Check if the user is an admin
+    if (user.data?.role === "admin" || user.data?.role === "mod") {
+      const eventId = context.params?.eventId;
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", eventId)
+        .single();
+      if (data.asistencia) {
+        const alumnos = await getPersonas(data.addressedTo);
+        return {
+          props: {
+            alumnos,
+          },
+        };
+      }
+      return {
+        redirect: {
+          destination: `/eventos/${eventId}`,
+          permanent: false,
+        },
+      };
+    } else {
+      console.log("No es admin");
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  },
+  authRequired: true,
+});
+```
+
+La tabla que se hace tiene la propiedad de que se pueda clickear una fila. Al hacer click a una fila se puede ir a la ruta con su codigo para colocar su asistencia del evento.

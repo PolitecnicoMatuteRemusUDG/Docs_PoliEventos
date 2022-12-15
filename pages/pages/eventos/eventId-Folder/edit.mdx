@@ -1,1 +1,81 @@
 # edit.tsx
+
+Esta ruta se encarga de editar el evento. En esta se pueden subir o editar las fotos.
+
+Pero tambien otros aspectos generales del evento, como las siguientes:
+
+    - Nombre del evento.
+    - Descripción del evento.
+    - Día del evento.
+    - Hora de inicio del evento.
+    - Hora de fin del evento.
+    - Lugar del evento
+    - Fotos del evento.
+
+Los eventos los puede editar cualquiera que tengan role de administrador o de moderador.
+
+En esta ruta lo que se hace es un update sencillo. Que sería el siguiente:
+
+```js
+async function deleteImage() {
+  let { error } = await supabase.storage
+    .from("fotografiaseventos")
+    .remove(["fotosEventos/gato.jpg"]);
+  console.log(error);
+}
+```
+
+Pero para subir las imagenes al bucket, se tiene que hacer lo siguiente.
+
+```js
+// With promises (async/await) upload multiple images to supabase storage and then return the publics urls of the images uploaded
+async function uploadImages(files: FileWithPath[]) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    await supabase.storage
+      .from("fotografiaseventos")
+      .upload(`fotosEventos/${file.name}`, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+  }
+}
+```
+
+Después de eso se obtienen las URLs para actualizar el evento.
+
+```js
+// Obtener las URL de las imagenes subidas a supabase storage y retornarlas en un arreglo
+async function getImagesUrl(files: FileWithPath[]) {
+  let urls: string[] = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const {
+      data: { publicUrl },
+    } = supabase.storage
+      .from("fotografiaseventos")
+      .getPublicUrl(`fotosEventos/${file.name}`);
+    urls.push(publicUrl);
+  }
+  return urls;
+}
+```
+
+En dado caso que se quieran eliminar fotos de los eventos. Se necesita eliminar del bucket, para eso se necesita la siguiente función.
+
+```js
+
+async function deleteImages(images: string[]) {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    // Tenemos que sacar el nombre de la imagen para poder eliminarla con un regex
+    let nameImage = image.match(/fotosEventos\/(.*)/);
+    console.log(image);
+    console.log('asdfs', nameImage);
+    let { error } = await supabase.storage
+      .from('fotografiaseventos')
+      .remove([`fotosEventos/${nameImage![1]}`]);
+    console.log(error);
+  }
+}
+```
