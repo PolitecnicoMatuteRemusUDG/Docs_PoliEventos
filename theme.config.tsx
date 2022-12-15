@@ -1,18 +1,17 @@
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
+import React from "react";
+import { DocsThemeConfig } from "nextra-theme-docs";
 
 const config: DocsThemeConfig = {
-  logo: <span>My Project</span>,
+  logo: <span>Eventos Poli Matute</span>,
   project: {
-    link: 'https://github.com/shuding/nextra-docs-template',
+    link: "https://eventos-poli-nxt-f1gq.vercel.app/",
   },
-  chat: {
-    link: 'https://discord.com',
-  },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
-  footer: {
-    text: 'Nextra Docs Template',
-  },
-}
 
-export default config
+  docsRepositoryBase:
+    "https://github.com/PolitecnicoMatuteRemus/Docs_PoliEventos",
+  footer: {
+    text: "Eventos Poli Matute Docs",
+  },
+};
+
+export default config;
