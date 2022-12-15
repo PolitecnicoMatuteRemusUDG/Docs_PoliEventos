@@ -10,5 +10,8 @@
   },
   "login": {
     "title": "login.tsx"
+  },
+  "indexPage": {
+    "title": "index.tsx"
   }
 }
