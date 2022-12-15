@@ -1,5 +1,11 @@
 {
   "index": {
     "title": "Introducción a las rutas"
+  },
+  "app": {
+    "title": "_app.tsx"
+  },
+  "document": {
+    "title": "_document.tsx"
   }
 }
