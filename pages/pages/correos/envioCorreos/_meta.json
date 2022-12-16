@@ -2,9 +2,7 @@
   "index": {
     "title": "Introducción - Envio de correos"
   },
-  "indexPage": {
-    "title": "index.tsx"
-  },
+
   "idEventUser": {
     "title": "[idEventUser].tsx"
   }

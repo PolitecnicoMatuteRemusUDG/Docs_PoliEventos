@@ -1,1 +1,31 @@
 # index.tsx
+
+En esta pagina lo que se hace es filtrar los eventos que falten de enviar los correos.
+
+Esto de la siguiente manera
+
+```js
+let { data } = await await supabase
+  .from("events_users")
+  .select("*, idevent(*)");
+let asd = data
+  ?.map((item) => {
+    if (
+      !(item.codigoindex == null) &&
+      !(item.tablaindex == null) &&
+      !(item.index == null)
+    ) {
+      return item;
+    }
+  })
+  .filter((item) => item != undefined);
+
+console.log("Es admin");
+return {
+  props: {
+    asd,
+  },
+};
+```
+
+Lo que se hace es checar que los tres campos no sean igual a null. Ya que estos son los que hace referencia en donde se quedo. Si todos son null, entonces significa que ya se enviaron todos los correos.
