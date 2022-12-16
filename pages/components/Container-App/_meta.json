@@ -1,0 +1,17 @@
+{
+    "AplicationContainer":  {
+        "title" : "AplicationContainer.tsx"
+    },
+    "EventoCarousel":  {
+        "title" : "EventoCarousel.tsx"
+    },
+    "MainLinks":  {
+        "title" : "MainLinks.tsx"
+    },
+    "MantineApp":  {
+        "title" : "MantineApp.tsx"
+    },
+    "ResumenEventos":  {
+        "title" : "ResumenEventos.tsx"
+    }
+}
