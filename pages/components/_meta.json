@@ -1,5 +1,38 @@
 {
   "introduccion":  {
     "title" : "Introducción"
+  },
+  "ColorSchemeToggle":  {
+    "title" : "ColorSchemeToggle"
+  },
+  "AplicationContainer":  {
+    "title" : "AplicationContainer"
+  },
+  "EventoCarousel":  {
+    "title" : "EventoCarousel"
+  },
+  "MainLinks":  {
+    "title" : "MainLinks"
+  },
+  "MantineApp":  {
+    "title" : "MantineApp"
+  },
+  "ResumenEventos":  {
+    "title" : "ResumenEventos"
+  },
+  "EnlacesIndex":  {
+    "title" : "EnlacesIndex"
+  },
+  "FilterInput":  {
+    "title" : "FilterInput"
+  },
+  "FormInputs":  {
+    "title" : "FormInputs"
+  },
+  "graficas":  {
+    "title" : "graficas"
+  },
+  "ImageDelete":  {
+    "title" : "ImageDelete"
   }
 }

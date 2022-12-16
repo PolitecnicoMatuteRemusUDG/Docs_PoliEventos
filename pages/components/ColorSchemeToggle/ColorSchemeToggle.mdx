@@ -1,0 +1,35 @@
+# ColorSchemeToggle
+Este componente, le permite al usuario tener la capacidad de cambiar el tema en el que ve la página ( tema claro / tema oscuro ).
+Mediante un clic en este componente que se situa de manera visual y accesible al usuario, se puede cambiar y guardar una configuración del tema que tiene la página en su totalidad.
+
+## ColorSchemeToggle
+Con la finalidad de que el componente sea intuitivo en su funcionalidad, se le agregan varios iconos y colores distintivos de un botón para cambiar el tema de una página web moderna.
+```js
+import { ActionIcon, Group, useMantineColorScheme } from '@mantine/core';
+import { IconSun, IconMoonStars } from '@tabler/icons';
+
+export function ColorSchemeToggle() {
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
+  return (
+    <Group position="center" mt="xl">
+      <ActionIcon
+        onClick={() => toggleColorScheme()}
+        size="xl"
+        sx={(theme) => ({
+          backgroundColor:
+            theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3],
+          color: theme.colorScheme === 'dark' ? theme.colors.yellow[4] : theme.colors.blue[6],
+        })}
+      >
+        {colorScheme === 'dark' ? (
+          <IconSun size={20} stroke={1.5} />
+        ) : (
+          <IconMoonStars size={20} stroke={1.5} />
+        )}
+      </ActionIcon>
+    </Group>
+  );
+}
+
+```
