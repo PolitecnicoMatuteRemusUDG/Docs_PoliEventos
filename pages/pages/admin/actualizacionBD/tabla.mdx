@@ -1,0 +1,36 @@
+# [tabla].tsx
+
+Con este parametro obtenemos la tabla y aqui podemos hacer lo que sería la actualización de la base de datos.
+
+En esta ruta contienen estas acciones:
+
+    - Actualizar tabla con un archivo de excel.
+    - Exportar la tabla en un archivo de excel.
+    - Agregar un registro individual.
+    - Editar un registro individual.
+    - Eliminar un archivo individual.
+
+Exportar la tabla en un archivo de excel.
+
+```js
+
+// @@ -- Funcion para exportar a excel la tabla -- @@
+async function exportToExcel(table_name: string) {
+  let table_name1 = `${table_name}`;
+  const { data } = await supabase.from(table_name1).select('*');
+  let json: any = data?.map((x: any) => ({
+    ...x,
+  }));
+  let pad = json.map((x: any) => {
+    let obj: any = {};
+    for (let key in x) {
+      if (key !== 'id' && key !== 'created_at') {
+        obj[key] = x[key];
+      }
+    }
+    return obj;
+  });
+
+```
+
+La función de actualizar la base de datos esta mejor explicada en el "Manual Tecnico de la aplicacion"
