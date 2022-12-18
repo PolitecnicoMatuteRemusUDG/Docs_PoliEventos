@@ -1,1 +1,154 @@
-# FilterInputs
+# Componente de Filtrado de Inputs
+Este componente cumple una función primordial en la ruta de crearEvento, ya que ayuda
+a filtrar los alumnos ya sea por turno, grupo, grado, o carrera, y también ayuda a filtrar a los maestros por departamento.
+
+## Utilización
+```js filename="crearEvento.tsx"
+<FilterInputs onConfirm={setQuery} />
+```
+
+## Composición
+
+States
+```js
+const [chips, setChips] = useState([] as string[]);
+const [turno, setTurno] = useState(String());
+const [grupos, setGrupos] = useState([] as any);
+const [value, setValue] = useState([] as string[]);
+const [departamentos, setDepartamentos] = useState([] as string[]);
+const [filtroTurnos, setFiltroTurnos] = useState([] as any);
+const [filtroCarreras, setfiltroCarreras] = useState([] as any);
+const [seleccionGrupos, setSeleccion] = useState([] as any);
+const [alumnos, setAlumnos] = useState([] as any);
+const [categorias, setCategorias] = useState({} as any);
+const [personasEspecificas, setPersonasEspecificas] = useState([] as any);
+const [checkDataGrid, setcheckDataGrid] = useState({} as any);
+const [checkCarreras, setcheckCarreras] = useState(false);
+const [guardarFiltro, setguardarFiltro] = useState(false);
+const [gruposCheck, setGruposCheck] = useState(false);
+```
+
+Se tienen diferentes useEffect para la actualización de los datos.
+El primero que entra en acción trae los datos de los grupos desde la base de datos.
+
+```js
+useEffect(() => {
+const getGrupos = async () => {
+    const { data } = await supabase.from('tabla-grupos').select('*');
+    setGrupos(data);
+};
+
+getGrupos();
+}, []);
+```
+
+El segundo useEffect registrado escucha por algún cambio en el state de chips,
+lo que significará algún cambio de la categoria más general.
+
+```js
+useEffect(() => {
+setguardarFiltro(true);
+if (chips.includes('Personas-Especificas')) {
+    if (contadorUseEffect === 0) {
+    const getGrupos = async () => {
+        // Se va a necesitar obtener los datos de todas las tablas
+        const alumnos = await (
+        await supabase.from('tabla-estudiantes').select('codigo, nombre, correo')
+        ).data?.map((alumno: { codigo: string; nombre: string; correo: string }) => {
+        return { ...alumno, seccion: 'ALUMNO' };
+        });
+
+        const profesores = await (
+        await supabase.from('tabla-maestros').select('*').select('codigo, nombre, correo')
+        ).data?.map((alumno: { codigo: string; nombre: string; correo: string }) => {
+        return { ...alumno, seccion: 'PROFESOR' };
+        });
+        const operativos = await (
+        await supabase.from('tabla-opts').select('codigo, nombre, correo')
+        ).data?.map((alumno: { codigo: string; nombre: string; correo: string }) => {
+        return { ...alumno, seccion: 'OPERATIVO' };
+        });
+        const administrativos = await (
+        await supabase.from('tabla-admts').select('codigo, nombre, correo')
+        ).data?.map((alumno: { codigo: string; nombre: string; correo: string }) => {
+        return { ...alumno, seccion: 'ADMINISTRATIVO' };
+        });
+        let valores = [
+        ...(alumnos as any),
+        ...(profesores as any),
+        ...(operativos as any),
+        ...(administrativos as any),
+        ];
+        setAlumnos(valores);
+    };
+    getGrupos();
+    contadorUseEffect++;
+    }
+}
+}, [chips]);
+```
+
+El siguiente useEffect, estará al tanto de los cambios en el state de turno.
+Si se detecta algún cambio en el array, modificará los grupos y mostrará el nuevo filtro.
+```js
+useEffect(() => {
+let arrayTurno = grupos?.filter((grupo: GruposYCarreras) => {
+    if (turno !== 'AMB') {
+    return grupo.turno === turno;
+    }
+    return grupo.turno;
+});
+setFiltroTurnos(arrayTurno);
+}, [turno]);
+```
+
+El useEffect a continuación, estará al tanto de los cambios en el state de value.
+Este useEffect filtrará las carreras que provienen del array filtrado de los turnos.
+```js
+useEffect(() => {
+let arrayCarreras = filtroTurnos.filter((grupo: GruposYCarreras) => {
+    return value.includes(grupo.carrera);
+});
+setfiltroCarreras(arrayCarreras);
+}, [value]);
+```
+
+El useEffect consecuente estará al tanto del state de checkDataGrid, registrará a
+personas Especificas a las que se quiera asignar el evento.
+```js
+useEffect(() => {
+if (Object.keys(checkDataGrid).length > 0) {
+    let valor = [] as any;
+    Object.keys(checkDataGrid).forEach((key) => {
+    valor.push(alumnos[key]);
+    });
+    setPersonasEspecificas(valor);
+} else {
+    setPersonasEspecificas([]);
+}
+}, [checkDataGrid]);
+```
+
+El último useEffect que se usa está a la escucha del state de guardarFiltro
+y este, registrará un filtrado en base a los filtros previos que se realizaron.
+```js
+useEffect(() => {
+if (guardarFiltro == false) {
+    let valoresConjunction = {
+    categoriasGenerales: chips,
+    turno: turno,
+    carreras: value,
+    seleccionGrupos: seleccionGrupos,
+    departamentos: departamentos,
+    seleccionCarrera: checkCarreras,
+    personasEspecificas: personasEspecificas,
+    checkGrupos: gruposCheck,
+    };
+    setCategorias(valoresConjunction);
+    onConfirm(valoresConjunction);
+} else {
+    setCategorias({});
+    onConfirm({});
+}
+}, [guardarFiltro]);
+```

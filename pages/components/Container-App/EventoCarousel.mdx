@@ -1,0 +1,168 @@
+# Componente para Eventos en el Carousel
+
+## Utilización
+Este componente, nos permite reutilizar código dentro del carousel principal de la página que se utiliza en el index de la página.
+
+``` js filename="index.tsx" {25}
+<Carousel
+    id="Carrusel"
+    withIndicators
+    slideSize="30%"
+    slideGap="sm"
+    breakpoints={[
+        { maxWidth: 'md', slideSize: '50%', slideGap: 'sm' },
+        { maxWidth: 'sm', slideSize: '60%', slideGap: 0 },
+        { maxWidth: 'xs', slideSize: '100%', slideGap: 0 },
+    ]}
+    loop
+    sx={{
+        height: '300px',
+        [`@media (max-width: 375px)`]: {
+        height: '270px',
+        },
+    }}
+    styles={{
+        control: { backgroundColor: 'gray' },
+        indicator: { backgroundColor: 'gray' },
+    }}
+    align="start"
+    >
+    {ultimosEventos?.map((evento: any) => (
+        <EventoCarousel
+        title={evento.idevent.nameevent}
+        description={evento.idevent.description}
+        images={evento.idevent.images[0]}
+        idevent={evento.idevent.id}
+        fecha={evento.idevent.dateevent}
+        route={evento.idevent.type}
+        />
+    ))}
+</Carousel>
+```
+
+## Props
+El componente recibirá como props, las propiedades de un evento, a partir de un interface previamente definido.
+``` js
+interface EventoProps {
+  title: string;
+  description: string;
+  images: string;
+  idevent: number;
+  route?: boolean;
+}
+```
+
+## El componente
+Este componente muestra las propiedades de los eventos que se le pasan como props, además que provee un enlace al evento directamente por medio de un clic en la imagen.
+``` js filename="EventoCarousel.tsx" {12, 20, 56, 59, 100, 103}
+export default function EventoCarousel({
+  title,
+  description,
+  images,
+  idevent,
+  route = true,
+}: EventoProps) {
+  return (
+    <Carousel.Slide>
+      {' '}
+      <Image
+        src={images}
+        height={250}
+        width={400}
+        alt="Imagen de Evento"
+        id="id"
+        objectFit="cover"
+      />
+      {route ? (
+        <Link href={`/eventos/${idevent}`}>
+          <Group
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 1,
+
+              [`@media (max-width: 375px)`]: {
+                height: '50px',
+              },
+            }}
+          >
+            <Group
+              ml={35}
+              mt={170}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                color: '#c1c2c5',
+
+                [`@media (max-width: 355px)`]: {
+                  marginTop: '80px',
+                },
+                [`@media (max-width: 768px)`]: {
+                  marginTop: '100px',
+                },
+                [`@media (max-width: 1660px)`]: {
+                  marginTop: '80px',
+                },
+              }}
+            >
+              <Title size={15} color="white">
+                {title}
+              </Title>
+              <Text size={12} mt={-15} color="white">
+                {description}
+              </Text>
+            </Group>
+          </Group>
+        </Link>
+      ) : (
+        <Group
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 1,
+
+            [`@media (max-width: 375px)`]: {
+              height: '50px',
+            },
+          }}
+        >
+          <Group
+            ml={35}
+            mt={170}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              color: '#c1c2c5',
+
+              [`@media (max-width: 355px)`]: {
+                marginTop: '80px',
+              },
+              [`@media (max-width: 768px)`]: {
+                marginTop: '100px',
+              },
+              [`@media (max-width: 1660px)`]: {
+                marginTop: '80px',
+              },
+            }}
+          >
+            <Title size={15} color="white">
+              {title}
+            </Title>
+            <Text size={12} mt={-15} color="white">
+              {description}
+            </Text>
+          </Group>
+        </Group>
+      )}
+    </Carousel.Slide>
+  );
+}
+```

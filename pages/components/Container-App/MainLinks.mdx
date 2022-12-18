@@ -1,0 +1,166 @@
+# Componente MainLinks
+
+## Utilización
+```js filename="MantineApp.tsx" {12}
+<Group sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    [`@media (max-width: 768px)`]: {
+        display: 'inline',
+    },
+    [`@media (max-height: 600px)`]: {
+        display: 'inline',
+        marginTop: 0
+    },
+    }}>
+    <MainLinks />
+</Group>
+```
+
+## MainLink
+MainLink es un componente, que después se usa en
+una iteración para crear el componente de MainLinks.
+
+## props
+Los props que toma el componente "MainLink" vienen de un
+interface previamente definido en el archivo.
+
+```js
+interface MainLinkProps {
+  icon: React.ReactNode;
+  color: string;
+  label: string;
+  route: string;
+}
+```
+
+## Componente MainLink
+```js
+function MainLink({ icon, color, label, route }: MainLinkProps) {
+  const { user } = useUser();
+
+  return (
+    <>
+      <Link href={route} passHref>
+        <UnstyledButton
+          id="ChangeTheme"
+          sx={(theme) => ({
+            display: 'block',
+            width: '100%',
+            padding: theme.spacing.xs,
+            borderRadius: theme.radius.sm,
+            color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.dark[3],
+            marginBottom: '2rem',
+
+            '&:hover': {
+              backgroundColor:
+                theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2],
+            },
+            [`@media (max-height: 550px)`]: {
+              marginBottom: '1rem',
+            },
+          })}
+        >
+          <Group
+            sx={() => ({
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              [`@media (max-width: 768px)`]: {
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                marginLeft: '37%',
+              },
+              [`@media (max-width: 425px)`]: {
+                marginLeft: '30%',
+              },
+              [`@media (max-width: 319px)`]: {
+                marginLeft: '20%',
+              },
+            })}
+          >
+            <ThemeIcon
+              color={color}
+              variant="light"
+              sx={{
+                width: '2rem',
+                height: '2rem',
+                [`@media (max-height: 650px)`]: {
+                  width: '0rem',
+                  height: '0rem',
+                },
+                [`@media (max-height: 550px)`]: {
+                  width: '.1rem',
+                },
+              }}
+            >
+              {icon}
+            </ThemeIcon>
+
+            <Text
+              weight={700}
+              size={12}
+              sx={(theme) => ({
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                [`@media (max-width: 768px)`]: {
+                  marginLeft: '5px',
+                },
+                [`@media (max-height: 650px)`]: {
+                  fontSize: '10px',
+                },
+                [`@media (max-height: 550px)`]: {
+                  fontSize: '8px',
+                },
+              })}
+            >
+              {label}
+            </Text>
+          </Group>
+        </UnstyledButton>
+      </Link>
+    </>
+  );
+}
+```
+
+## Data
+La parte "Data" que se encuentra en este archivo, se refiere a
+los Links que tendrá el componente "Main Links", se tienen dos
+tipos de data, uno para el height de una pantalla cuando es mayor de 550px
+y otro para cuando es menor.
+Consta de un array de objetos, cuyos "keys" son los props que recibe el componente MainLink.
+
+```js
+const dataMobile = [
+  { icon: <IconSmartHome size={12} />, color: 'blue', label: 'Inicio', route: '/' },
+  { icon: <IconCalendarEvent size={12} />, color: 'teal', label: 'Calendario', route: '/calendar' },
+  { icon: <IconDatabase size={12} />, color: 'grape', label: 'Eventos', route: '/eventos' },
+  { icon: <IconSitemap size={12} />, color: 'yellow', label: 'Admin', route: '/admin' },
+];
+
+const data = [
+  { icon: <IconSmartHome size={16} />, color: 'blue', label: 'Inicio', route: '/' },
+  { icon: <IconCalendarEvent size={16} />, color: 'teal', label: 'Calendario', route: '/calendar' },
+  { icon: <IconDatabase size={16} />, color: 'grape', label: 'Eventos', route: '/eventos' },
+  { icon: <IconSitemap size={16} />, color: 'yellow', label: 'Admin', route: '/admin' },
+];
+```
+
+## Componente MainLinks
+```js filename="MainLinks.tsx"
+export function MainLinks() {
+  const { height } = useViewportSize();
+
+  if (height < 550) {
+    const links = dataMobile.map((link) => <MainLink {...link} key={link.label} />);
+    return <div>{links}</div>;
+  } else {
+    const links = data.map((link) => <MainLink {...link} key={link.label} />);
+    return <div>{links}</div>;
+  }
+}
+```

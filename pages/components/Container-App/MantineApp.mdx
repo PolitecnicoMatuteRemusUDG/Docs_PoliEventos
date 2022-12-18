@@ -1,0 +1,141 @@
+# Componente Principal de la Página
+Este es el componente que le da forma a la página completa,
+su función principal es darle la apariencia de tener un Header y un Navbar estáticos a la página
+y el resto de la pantalla usarlo para mostrar las diferentes rutas.
+
+## props
+Recibe de props un ReactNode que es la parte dinámica que cambia según la ruta en la
+que se encuentre el usuario, esto proveniente de un interface previamente definido.
+```js
+export interface LayoutProps {
+  children: React.ReactNode;
+}
+```
+
+## AppShell
+Este es un componente proveniente de Mantine.dev, que ayuda a darle de forma más fácil
+la apariencia deseada a la página con el Header y la barra de navegación estáticas.
+El Header y el Navbar son props que recibe el componente y deben ser ReactNode.
+De contenido se le pasará el nodo de react que se quiere mostrar en la parte dinámica de la página.
+```js filename="MantineApp.tsx" {9, 74, 119}
+<AppShell
+    styles={{
+    main: {
+        background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
+    },
+    }}
+    navbarOffsetBreakpoint="sm"
+    asideOffsetBreakpoint="sm"
+    navbar={
+    <Navbar
+        sx={{
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3],
+        borderRight: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[5],
+
+        display: 'flex',
+        justifyContent: 'space-between',
+        [`@media (max-height: 600px)`]: {
+            overflow: 'auto',
+        },
+        }}
+        p="xl"
+        hiddenBreakpoint="sm"
+        hidden={!opened}
+        width={{ sm: 150, lg: 150 }}
+        onClick={(e) => {
+        e.target.addEventListener('click', cambiarEstado);
+        function cambiarEstado(evt: any) {
+            if (
+            evt.target.classList.contains('mantine-UnstyledButton-root') ||
+            evt.target.classList.contains('mantine-Group-root') ||
+            evt.target.classList.contains('mantine-Group-child') ||
+            evt.target.classList.contains('mantine-Text-root')
+            ) {
+            setOpened(false);
+            }
+        }
+    }
+    >
+        <Group sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        [`@media (max-width: 768px)`]: {
+            display: 'inline',
+        },
+        [`@media (max-height: 600px)`]: {
+            display: 'inline',
+            marginTop: 0
+        },
+        }}>
+        <MainLinks />
+        </Group>
+        <Button
+        sx={{width: '100%'}}
+            onClick={() => {
+            {
+                user ? handleSignOut() : router.push('/login');
+            }
+            setOpened((o) => !o);
+            }
+        }
+        >
+            <Text size={10} sx={{
+            [`@media (max-height: 650px)`]: {
+                fontSize:'8px'
+            },
+            [`@media (max-height: 550px)`]: {
+                fontSize:'7px'
+            }
+            }}>{user ? 'Cerrar Sesión' : 'Iniciar Sesión'}</Text>
+        </Button>
+
+    </Navbar>
+    }
+    header={
+    <Header height={70} p="md"
+        sx={{
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[4],
+        borderBottom: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[5],
+        }}
+    >
+        <div
+        style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: '100%',
+        }}
+        >
+        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+            <Burger
+            opened={opened}
+            onClick={() => setOpened((o) => !o)}
+            size="sm"
+            color={theme.colors.gray[6]}
+            mr="xl"
+            />
+        </MediaQuery>
+        <Link href='/'><a href='/'
+            style={{
+            color: theme.colorScheme === 'dark' ? '#c1c2c5' : 'black',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+            }}>
+            <Text weight={700} size={20} sx={{
+                [`@media (max-width: 768px)`]: {
+                marginLeft: '0px',
+                },
+                marginLeft: '40px',
+            }}>Roco</Text>
+            </a>
+            </Link>
+        <div style={{ marginBottom: '1.5rem' }}>
+            <ColorSchemeToggle />
+        </div>
+        </div>
+    </Header>
+    }
+>
+    {props.children}
+</AppShell>
+```

@@ -1,1 +1,71 @@
-# BotonesAcciones
+# Componente de Botones
+La función principal de este componente es no cargar tanto código en la página
+index. Su composición es de 3 botones que te llevan a diferentes rutas, no recibe nigún props.
+
+## Utilización
+Este componente aparece en la página principal.
+```js filename="index.tsx" {2}
+<Grid.Col md={12} lg={12}>
+    <BotonesAcciones />
+</Grid.Col>
+```
+
+```js filename="BotonesAcciones.tsx" {14, 28, 42}
+export function BotonesAcciones() {
+  return (
+    <Group
+      sx={() => ({
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-around',
+        [`@media (max-width: 768px)`]: {
+          flexDirection: 'column',
+        },
+      })}
+    >
+      <Link href="/calendar">
+        <Button
+          variant='gradient'
+          gradient={{ from: 'teal', to: 'blue', deg: 240 }}
+          sx={() => ({
+            width: '30%',
+            [`@media (max-width: 768px)`]: {
+                width: '80%',
+            },
+          })}
+        >
+          <Text>Calendario</Text>
+        </Button>
+      </Link>
+      <Link href="/eventos">
+        <Button
+        color={'teal'}
+          sx={() => ({
+            width: '30%',
+            [`@media (max-width: 768px)`]: {
+                width: '80%',
+            },
+          })}
+        >
+          <Text>Eventos Pasados</Text>
+        </Button>
+      </Link>
+
+      <Link href="/eventos/crearEvento">
+        <Button
+          variant='gradient'
+          gradient={{ from: 'teal', to: 'blue', deg: 0 }}
+          sx={() => ({
+            width: '30%',
+            [`@media (max-width: 768px)`]: {
+                width: '80%',
+            },
+          })}
+        >
+          <Text>Crear Evento</Text>
+        </Button>
+      </Link>
+    </Group>
+  );
+}
+```

@@ -1,0 +1,172 @@
+# Componente de Resumen de Eventos
+Este componente es uno de los que más se reutiliza en toda la página,
+su función principal es brindar un resumen breve de los eventos publicados.
+
+## props
+Recibe como props las propiedades que tiene un evento, y estos vienen de un interface
+previamente definido.
+```js
+interface EventoProps {
+  title: string;
+  fecha: string;
+  lugar: string;
+  description: string;
+  images?: [] | null;
+  idevent?: number | null;
+  route?: boolean;
+}
+```
+
+## ResumenEventos
+Este componente tiene un diseño final de un card, donde muestra las propiedades de los eventos que se le pasan como props, además que provee un enlace al evento directamente por medio de un clic en la imagen del card, o en un botón del card.
+```js filename="ResumenEventos.tsx" {51, 55, 59, 63, 76, 78, 120}
+export function ResumenEvento({
+  title,
+  fecha,
+  lugar,
+  description,
+  images,
+  idevent,
+  route = true,
+}: EventoProps) {
+  const theme = useMantineTheme();
+  return (
+    <>
+      <Container
+        sx={(theme) => ({
+          background: '#1a1b1e',
+          backgroundColor: theme.colorScheme === 'dark' ? '#1a1b1e' : '#dee2e6',
+          width: '100%',
+          height: 'auto',
+          borderRadius: '8px',
+          padding: '1.5rem',
+        })}
+      >
+        <Group
+          sx={() => ({
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+          })}
+        >
+          {/* Texto Evento */}
+          <Group
+            sx={() => ({
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+            })}
+          >
+            <Group
+              sx={() => ({
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+                alignItems: 'flex-start',
+                flexDirection: 'column',
+                height: 'auto',
+              })}
+            >
+              <Title weight={500} size={20}>
+                {title}
+              </Title>
+              <Text>
+                <b>Fecha: </b>
+                {fecha}
+              </Text>
+              <Text>
+                <b>Lugar: </b>
+                {lugar}
+              </Text>
+            </Group>
+
+            <Text>{description}</Text>
+          </Group>
+
+          {/* Imagenes del Card */}
+          <Group
+            sx={() => ({
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+            })}
+          >
+            {images?.map((eventoImg: any) =>
+              route ? (
+                <Link href={`eventos/${idevent}`}>
+                  <Image
+                    src={eventoImg}
+                    alt="Evento"
+                    width={70}
+                    height={50}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        zIndex: 15,
+                        transform: 'scale(1.8)',
+                        transition: 'transform .7s ease-in-out',
+                      },
+                    }}
+                  />
+                </Link>
+              ) : (
+                <Image
+                  src={eventoImg}
+                  alt="Evento"
+                  width={70}
+                  height={50}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      zIndex: 15,
+                      transform: 'scale(1.8)',
+                      transition: 'transform .7s ease-in-out',
+                    },
+                  }}
+                />
+              )
+            )}
+          </Group>
+
+          {/* Enlace a Evento */}
+          <Group
+            sx={() => ({
+              display: 'flex',
+              justifyContent: 'flex-end',
+              width: '100%',
+            })}
+          >
+            {route ? (
+              <Link href={`eventos/${idevent}`}>
+                <Button
+                  variant="outline"
+                  color="blue"
+                  sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0.5rem',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      background: '#1a1b1e',
+                      color: '#fff',
+                    },
+                  }}
+                >
+                  <Scale size={20} />
+                  <Text sx={{ marginLeft: '0.5rem' }}>Ver Evento</Text>
+                </Button>
+              </Link>
+            ) : (
+              <></>
+            )}
+          </Group>
+        </Group>
+      </Container>
+    </>
+  );
+}
+```

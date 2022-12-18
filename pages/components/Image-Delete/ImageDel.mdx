@@ -1,0 +1,57 @@
+# Componente ImageDelete
+Este componente en los previews de imagenes que se han subido a un evento
+en las rutas de crear o editar el evento.
+Su función es una más de estetica, ya que este componente o que hace es,
+mostrar la imagen y un pequeño icono para darle clic si es que se quiere quitar
+la imagen de la selección.
+
+## Componente
+```js filename="imageDel.tsx"
+export default function ImageDel({ imageUri, onClick }: any) {
+  return (
+    <Box>
+      <Center
+        sx={{
+          backgroundColor: 'gray',
+          borderRadius: 15,
+          height: 80,
+          width: 80,
+          overflow: 'hidden',
+          margin: '1rem',
+        }}
+      >
+        {!imageUri ? (
+          <IconLetterX size={50} color="white" />
+        ) : (
+          <Image
+            src={imageUri}
+            alt="Image"
+            radius={15}
+            height={80}
+            width={80}
+            sx={{
+              position: 'absolute',
+            }}
+          />
+        )}
+      </Center>
+      <ActionIcon
+        variant="filled"
+        color="red"
+        size="sm"
+        onClick={() => {
+          onClick();
+        }}
+        sx={{
+          position: 'relative',
+          right: -80,
+          top: -100,
+          borderRadius: '50%',
+        }}
+      >
+        <IconCircuitSwitchClosed size={15} />
+      </ActionIcon>
+    </Box>
+  );
+}
+```

@@ -1,1 +1,89 @@
-# FormTables
+# Componente FormTables
+Este componente nos ayuda a agregar o editar personas individualmente a alguna tabla
+en la base de datos.
+
+## Utilización
+Este componente aparece en las páginas de actualización de tablas de la base de datos.
+```js filename="[tabla].tsx"
+<FormTables
+    campos={campos}
+    initialValues={initialValues}
+    onSubmit={handleAddInvididual}
+    inputs={inputs}
+    validate={validates}
+/>
+```
+
+## props
+Los props que toma este componente son los siguientes:
+```js
+type Props = {
+  campos: string[];
+  initialValues: { [key: string]: string };
+  onSubmit: (values: { [key: string]: string }) => void;
+  inputs: {
+    nombre: string;
+    description?: string;
+    label: string;
+    type: string;
+    required: boolean;
+    validate: Function;
+    options?: { label: string; value: string }[];
+  }[];
+  validate?: {};
+};
+```
+
+## Composición
+La Composición del componente se basa en una iteración de los inputs que se le pasen como props
+
+```js
+return (
+    <Box>
+        <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+        <Box>
+            {inputs.map((x) => {
+            if (x.type !== 'select') {
+                return (
+                <Input.Wrapper mt={15} label={x.label} required description={x.description}>
+                    <Input
+                    placeholder={x.label}
+                    type={x.type}
+                    required
+                    {...form.getInputProps(x.nombre.toString())}
+                    />
+                    {form.errors[x.nombre] && (
+                    <Box mt={1} color="red">
+                        <Text size="sm" color={'red'}>
+                        {form.errors[x.nombre]}
+                        </Text>
+                    </Box>
+                    )}
+                </Input.Wrapper>
+                );
+            } else {
+                return (
+                <Input.Wrapper mt={15} label={x.label} required description={x.description}>
+                    <Select
+                    my={5}
+                    placeholder={x.label}
+                    required
+                    {...form.getInputProps(x.nombre)}
+                    data={x.options}
+                    />
+                </Input.Wrapper>
+                );
+            }
+            })}
+        </Box>
+        <Button type="submit" variant="outline" color="teal" mt={15} my={'sm'} sx={{
+            width: '40%',
+            float:'right'
+        }}>
+            <Text mr={15}>Guardar</Text>
+            <IconDeviceFloppy />
+        </Button>
+        </form>
+    </Box>
+);
+```
