@@ -30,7 +30,7 @@ Aunque tambien se define estados individuales.
 
 La función que se define como "crearEvento, esta lo que hace es mandar a llamar lo que sería al endpoint de /api/crearEvento, con los valores obtenidos y crea el evento.
 
-Esta parte del codigo sería nada más para crear el evento. El cual contiene lo que serían los valores colocados en los inputs.
+Esta parte del codigo sería nada más para crear el evento. El cual contiene lo que serían los valores colocados en los inputs y se corrige la hora que registran los inputs, ya que está desfasada por 6 horas.
 
 ```js
     const valores = {
@@ -40,6 +40,11 @@ Esta parte del codigo sería nada más para crear el evento. El cual contiene lo
       htmlBody: value,
       asistencia: asistencia,
     };
+    // Ajustar la hora de inicio y fin del evento
+    valores.starthour = new Date(valores.starthour);
+    valores.starthour.setHours(valores.starthour.getHours() - 6);
+    valores.endhour = new Date(valores.endhour);
+    valores.endhour.setHours(valores.endhour.getHours() - 6);
     ...
     ...
     try {
