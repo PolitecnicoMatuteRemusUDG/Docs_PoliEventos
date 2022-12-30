@@ -37,7 +37,6 @@ export const getServerSideProps: GetServerSideProps = withPageAuth({
           .select('*')
           .match({ idEvent: eventId, codigo: codigo })
           .single();
-        // @TODO - Sobreescribir esta parte
         let personaBuscada = {} as any;
         if (data.tabla === 'ALUMNO') {
           personaBuscada = await supabase

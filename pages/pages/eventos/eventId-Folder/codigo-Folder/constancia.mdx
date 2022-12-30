@@ -1,3 +1,140 @@
 # constancia.mdx
 
-@TODO
+En esta ruta se define los valores para generar la constancia.
+
+La manera en la que se saca es obtienendo el codigo, el numero del evento, y buscamos si es que la persona realmente tiene atributo de asistencia.
+
+```js
+export const getServerSideProps: GetServerSideProps = withPageAuth({
+  redirectTo: '/login',
+  async getServerSideProps(context) {
+    // Access the user object
+    // Por alguna razon con el supabase de utils no nos da el id del usuario
+    const supabase = createServerSupabaseClient(context);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // Get the user from the database
+    const user = await supabase.from('users').select('*').eq('id', session?.user?.id).single();
+
+    // Check if the user is an admin
+    if (user.data?.role === 'admin') {
+      // Aqui se puede hacer la consulta a la base de datos de todos
+      const { codigo, eventId } = context.query;
+      let asistencia = await (
+        await supabase.from('events').select('*').eq('id', eventId).single()
+      ).data.asistencia;
+      if (asistencia) {
+        const { data } = await supabase
+          .from('event_attendance')
+          .select('*')
+          .match({ idevent: eventId, codigo: codigo })
+          .single();
+        let idPerson = data?.idperson;
+        let personaBuscada = {} as any;
+        if (data.tabla === 'ALUMNO') {
+          personaBuscada = await supabase.from('alumnos').select('*').eq('id', idPerson).single();
+          console.log('Persona buscada: ', personaBuscada);
+        }
+
+        if (data.tabla === 'PROFESOR') {
+          personaBuscada = await supabase
+            .from('profesores')
+            .select('*')
+            .match({ id: data.idperson })
+            .single();
+        }
+
+        if (data.tabla === 'OPERATIVO') {
+          personaBuscada = await supabase
+            .from('operativos')
+            .select('*')
+            .match({ id: data.idperson })
+            .single();
+        }
+
+        if (data.tabla === 'ADMINISTRATIVO') {
+          personaBuscada = await supabase
+            .from('administrativos')
+            .select('*')
+            .match({ id: data.idperson })
+            .single();
+        }
+
+        let pesona = personaBuscada.data;
+        return {
+          props: {
+            data: data,
+            pesona: pesona,
+          },
+        };
+      } else {
+        console.log('No hay asistencia');
+        return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          },
+        };
+      }
+    } else {
+      console.log('No es admin');
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
+    }
+  },
+  authRequired: true,
+});
+```
+
+En esta pagina se tienen dos botones, los cuales uno es para ver la constancia en la pagina y el otro es para verla en PDF. Esto para poder imprimirla y descargarla.
+
+```js
+<Group position="apart">
+  <Title>Constancia</Title>
+  <Group>
+    <Button
+      color="cyan"
+      uppercase
+      onClick={() => {
+        setVerWeb(!verWeb);
+        setVistaPdf(false);
+      }}
+    >
+      {verWeb ? "Ocultar web" : "Ver web"}
+    </Button>
+
+    <Button
+      color="cyan"
+      uppercase
+      onClick={() => {
+        setVistaPdf(!vistaPdf);
+        setVerWeb(false);
+      }}
+    >
+      {vistaPdf ? "Ocultar pdf" : "Ver pdf"}
+    </Button>
+  </Group>
+</Group>;
+{
+  data ? (
+    <>
+      {verWeb ? <VistaWeb data={datos} /> : null}
+      {vistaPdf ? (
+        <PDFViewer
+          style={{
+            width: "100%",
+            height: "80vh",
+          }}
+        >
+          <Constancia data={datos} />
+        </PDFViewer>
+      ) : null}
+    </>
+  ) : null;
+}
+```

@@ -1,0 +1,297 @@
+# personas.tsx
+
+En esta ruta lo que se tiene son las personas de la base de datos, lo que se hace es seleccionar la persona que queremos ver los datos de los eventos.
+
+Para esto se usa la función para obtener los datos de las personas, pero para esto la persona que accede a esta ruta tiene que tener como rol "admin".
+
+Lo que se usa para cargar a las personas que vamos a querer que esten en nuestra tabla, es una función que trae a todas las personas la cual es la siguiente.
+
+```js
+await getAllPersonas(supabase);
+```
+
+Esta funcion se manda a llamar en el "gerServerSideProps" y lo retorna.
+Esto de la siguiente manera se hace con la condición para checar el rol que tiene la persona que esta autenticada.
+
+```js
+export const getServerSideProps: GetServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(context) {
+    // Access the user object
+    // Por alguna razon con el supabase de utils no nos da el id del usuario
+    const supabase = createServerSupabaseClient(context);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // Get the user from the database
+    const user = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session?.user?.id)
+      .single();
+
+    // Check if the user is an admin
+    if (user.data?.role === "admin" || user.data?.role === "mod") {
+      // Tenemos que obtener todas las personas.
+      let personas = await getAllPersonas(supabase);
+      return {
+        props: {
+          personas,
+        },
+      };
+    } else {
+      console.log("No es admin");
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  },
+  authRequired: true,
+});
+```
+
+En la parte que renderiza la función se tienen los componentes principales, que son las graficas y la tabla.
+
+La grafica es la siguiente, esta se encuentra en la caperta componentes.
+
+```js
+        <Group
+          position="center"
+          sx={{
+            height: '400px',
+            width: '400px',
+            marginTop: '-5rem',
+            [`@media (max-width: 1260px)`]: {
+              width: '100%',
+              margin: '0 auto',
+            },
+          }}
+        >
+          <Personas
+            eventosNoAsistidos={datosPersona?.eventosNoAsistidos}
+            eventosAsistidos={datosPersona?.eventosAsistidos}
+          />
+        </Group>
+      </Group>
+```
+
+El otro componente principal es la tabla la cual se usa de la siguiente manera:
+
+```js
+<DataGrid
+  data={personas || pe}
+  striped
+  highlightOnHover
+  withGlobalFilter
+  withPagination
+  withColumnFilters
+  withSorting
+  onRow={(row) => ({
+    onClick: async () => {
+      let eventos = await supabase
+        .from("event_attendance")
+        .select("*")
+        .eq("codigo", row._valuesCache.codigo);
+      let eventosAsistidos = eventos.data?.filter(
+        (evento) => evento.asistencia === true
+      );
+      let eventosNoAsistidos = eventos.data?.filter(
+        (evento) => evento.asistencia === false
+      );
+      setDatosPersona({
+        ...row._valuesCache,
+        eventosAsistidos: eventosAsistidos?.length,
+        eventosNoAsistidos: eventosNoAsistidos?.length,
+      });
+    },
+  })}
+  withColumnResizing
+  columns={[
+    {
+      header: "codigo",
+      accessorFn: (row) => row?.codigo,
+    },
+    {
+      header: "nombre",
+      accessorFn: (row) => row?.nombre,
+      size: 300,
+    },
+    {
+      header: "seccion",
+      accessorFn: (row) => row?.seccion,
+      filterFn: stringFilterFn,
+    },
+  ]}
+  sx={{
+    td: {
+      backgroundColor: "unset",
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.gray[1]
+          : theme.colors.dark[6],
+    },
+    tr: {
+      "&:hover": {
+        cursor: "pointer",
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[4]
+            : theme.colors.gray[5],
+      },
+    },
+    th: {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[3],
+      cursor: "auto",
+    },
+  }}
+  empty={
+    <Stack>
+      <Title>No hay se encuentra a ninguna persona.</Title>
+      <Center p={40}>
+        <Button onClick={() => setOpened(true)}>Buscar</Button>
+      </Center>
+    </Stack>
+  }
+/>
+```
+
+onRow Este props es el cual tiene encargado de checar cuando se clickea o pasa algo en una fila. Se usa esto para colocar los datos en la parte prinicpal y buscar los datos en la base de datos
+para colocarlos luego en la grafica.
+
+```js
+  onRow={(row) => ({
+    onClick: async () => {
+      let eventos = await supabase
+        .from("event_attendance")
+        .select("*")
+        .eq("codigo", row._valuesCache.codigo);
+      let eventosAsistidos = eventos.data?.filter(
+        (evento) => evento.asistencia === true
+      );
+      let eventosNoAsistidos = eventos.data?.filter(
+        (evento) => evento.asistencia === false
+      );
+      setDatosPersona({
+        ...row._valuesCache,
+        eventosAsistidos: eventosAsistidos?.length,
+        eventosNoAsistidos: eventosNoAsistidos?.length,
+      });
+    },
+  })}
+```
+
+Los datos se colocan en un estado llamado "DatosPersona", los datos que se colocan en el componente "Personas" tiene como parametro dos, los cuales son dos valores sencillos que es para representar los campos en la grafica.
+
+Estos son los datos de los eventos asistidos y los no asistidos de la personas.
+
+Si es que no se encuentra una persona, entonces podemos buscarla en la tabla "data_backup", esto con el botón que se aparece cuando no se encuentra el valor. Podemos ver como se rendiriza el botón en el siguiente parametro del "DataGrid"
+
+```js
+  empty={
+    <Stack>
+      <Title>No hay se encuentra a ninguna persona.</Title>
+      <Center p={40}>
+        <Button onClick={() => setOpened(true)}>Buscar</Button>
+      </Center>
+    </Stack>
+  }
+```
+
+Esto nos permite que a la hora de que se de click en el boton, se muestre un modal el cual contiene un input, en este input se tiene que colocar el nombre de la persona para buscarla en el "data_backup"
+Lo que se hace es tomar el valor del input y buscar coincidencias en la tabla, no es necesario colocar tal cual el nombre de la persona.
+
+Este modal contiene una tabla la cual muestra los valores obtenidos o que coincideron con el valor que se coloco en el input, al igual que el componente principal de la tabla, este se tiene que seleccionar una fila para buscar los registros relacionados con el.
+
+```js
+<Modal
+  opened={opened}
+  onClose={() => setOpened(false)}
+  title="Introduce yourself!"
+  overlayColor={
+    theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[2]
+  }
+  overlayOpacity={0.55}
+  overlayBlur={3}
+  size="xl"
+>
+  <form
+    onSubmit={form.onSubmit(async (values) => {
+      let { data } = await supabase
+        .from("data_backup")
+        .select("*")
+        .textSearch("nombre", `${values.nombre.toUpperCase()}`, {
+          type: "phrase",
+        });
+
+      // Eliminar los objetos que tengan el mismo codigo y solo mantener uno
+      let dataSinDuplicados = data?.filter(
+        (v, i, a) => a.findIndex((t) => t.codigo === v.codigo) === i
+      );
+
+      setpe(dataSinDuplicados);
+    })}
+  >
+    <Stack spacing="md">
+      <TextInput
+        label="Nombre"
+        placeholder="Nombre"
+        required
+        {...form.getInputProps("nombre")}
+      />
+      <Button type="submit" variant="outline" color="teal">
+        Buscar
+      </Button>
+    </Stack>
+  </form>
+  {pe.length > 0 ? (
+    <DataGrid
+      data={pe}
+      columns={[
+        {
+          header: "codigo",
+          accessorFn: (row) => row?.codigo,
+        },
+        {
+          header: "nombre",
+          accessorFn: (row) => row?.nombre,
+          size: 300,
+        },
+        {
+          header: "seccion",
+          accessorFn: (row) => row?.seccion,
+          filterFn: stringFilterFn,
+        },
+      ]}
+      onRow={(row) => ({
+        onClick: async () => {
+          setOpened(false);
+          setpe([]);
+          let eventos = await supabase
+            .from("event_attendance")
+            .select("*")
+            .eq("codigo", row._valuesCache.codigo);
+          let eventosAsistidos = eventos.data?.filter(
+            (evento) => evento.asistencia === true
+          );
+          let eventosNoAsistidos = eventos.data?.filter(
+            (evento) => evento.asistencia === false
+          );
+          setDatosPersona({
+            ...row._valuesCache,
+            eventosAsistidos: eventosAsistidos?.length,
+            eventosNoAsistidos: eventosNoAsistidos?.length,
+          });
+        },
+      })}
+    />
+  ) : (
+    <Text>No se encontraron resultados</Text>
+  )}
+</Modal>
+```

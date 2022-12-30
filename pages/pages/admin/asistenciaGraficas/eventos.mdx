@@ -1,0 +1,142 @@
+# eventos.tsx
+
+En esta ruta se puede checar los eventos que se han creado y las asistencias y inasistencias de las personas a las que se invitaron.
+
+Se obtiene los eventos de las siguiente manera:
+
+```js
+export const getServerSideProps: GetServerSideProps = withPageAuth({
+  redirectTo: "/login",
+  async getServerSideProps(context) {
+    // Access the user object
+    // Por alguna razon con el supabase de utils no nos da el id del usuario
+    const supabase = createServerSupabaseClient(context);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    // Get the user from the database
+    const user = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session?.user?.id)
+      .single();
+
+    // Check if the user is an admin
+    if (user.data?.role === "admin" || user.data?.role === "mod") {
+      // Tenemos que obtener todas las personas.
+      let eventos = await getEventosCount(supabase);
+      console.log(eventos);
+
+      return {
+        props: {
+          eventos,
+        },
+      };
+    } else {
+      console.log("No es admin");
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  },
+  authRequired: true,
+});
+```
+
+Se pasan los eventos a la tabla para seleccionarlo.
+
+````js
+<DataGrid
+        data={eventos}
+        striped
+        highlightOnHover
+        withGlobalFilter
+        withPagination
+        withColumnFilters
+        withSorting
+        withColumnResizing
+        onRow={(row) => ({
+          onClick: async () => {
+            let { data } = await supabase
+              .from('event_attendance')
+              .select('*')
+              .eq('idevent', row?._valuesCache?.idevent);
+
+            let personasAsistieron = data?.filter((item) => item?.asistencia === true);
+            let personasNoAsistieron = data?.filter((item) => item?.asistencia === false);
+
+            setDatosEvento({
+              ...row._valuesCache,
+              personasAsistieron: personasAsistieron?.length,
+              personasNoAsistieron: personasNoAsistieron?.length,
+            });
+          },
+        })}
+        columns={[
+          {
+            header: 'idevent',
+            filterFn: numberFilterFn,
+            accessorFn: (row) => row?.idevent.id,
+          },
+          {
+            header: 'Nombre',
+            filterFn: stringFilterFn,
+            accessorFn: (row) => row?.idevent.nameevent,
+          },
+          {
+            header: 'Fecha',
+            filterFn: dateFilterFn,
+            accessorFn: (row) => row?.idevent.dateevent,
+          },
+          {
+            header: 'Personas invitadas',
+            filterFn: stringFilterFn,
+            accessorFn: (row) =>
+              row?.personastotales ? row?.personastotales : 'No se han invitado',
+          },
+          {
+            header: 'Descripcion',
+            filterFn: stringFilterFn,
+            accessorFn: (row) => row?.idevent.description,
+            enableHiding: true,
+          },
+          {
+            header: 'Lugar',
+            filterFn: stringFilterFn,
+            accessorFn: (row) => row?.idevent.placeevent,
+            enableHiding: true,
+          },
+        ]}
+        sx={{
+          td: {
+            backgroundColor: 'unset',
+            color: theme.colorScheme === 'dark' ? theme.colors.gray[1] : theme.colors.dark[6],
+          },
+          tr: {
+            '&:hover': {
+              cursor: 'pointer',
+              backgroundColor:
+                theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[5],
+            },
+          },
+          th: {
+            backgroundColor:
+              theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[3],
+            cursor: 'auto',
+          },
+        }}
+      />
+      ```
+````
+
+Y con el onRow podemos visualizar los datos del evento.
+
+```js
+<Eventos
+  personasAsistieron={datosEventos.personasAsistieron}
+  personasNoAsistieron={datosEventos.personasNoAsistieron}
+/>
+```
