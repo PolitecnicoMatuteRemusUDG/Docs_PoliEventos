@@ -1,1 +1,70 @@
 # Componente gráfica de Personas
+Este componente se encarga de mostrar las gráficas de la asistencia que tiene una persona a los eventos que se le han invitado.
+
+## Chart.js
+Chart.js es una libreria que nos permite crear gráficas a partir de datos dinámicos que nosotros le pasemos.
+
+## Props
+Los props que se le pasan a este componente vienen al darle click a una tabla que se encuentra en la vista de la gráfica, a la que se accede desde el panel de administrador.
+
+```js filename="Personas.tsx"
+import React from 'react';
+import { useMantineTheme } from '@mantine/core';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+interface Props {
+  personasAsistieron: number;
+  personasNoAsistieron: number;
+}
+export function Eventos(props: Props) {
+  const theme = useMantineTheme();
+
+  const options = {
+    indexAxis: 'y' as const,
+    elements: {
+      bar: {
+        borderWidth: 2,
+      },
+    },
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right' as const,
+      },
+      title: {
+        display: true,
+        text: 'Chart.js Horizontal Bar Chart',
+      },
+    },
+  };
+
+  const labels = ['No Asistieron', 'Asistieron'];
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Personas',
+        data: [props.personasNoAsistieron, props.personasAsistieron],
+        borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
+        backgroundColor: [
+          '#22d3ee',
+          '#84cc16'
+        ],
+      },
+    ],
+  };
+
+  return <Doughnut options={options} data={data} />;
+}
+
+export { Eventos as default };
+
+```
+
+## Referencias
+[Libreria Chart.js](https://www.chartjs.org/docs/3.9.1/)
+
+[Video de ejemplo](https://www.youtube.com/watch?v=TQGg_VZ6FgY&t=459s)

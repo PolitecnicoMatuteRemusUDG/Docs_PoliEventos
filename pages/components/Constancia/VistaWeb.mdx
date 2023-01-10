@@ -1,0 +1,68 @@
+# Constancia
+Este componente tiene la función de presentar una presentación de como quedaría la constancia en pdf, pero en una vista web.
+
+## Props
+Los props que se le pasan a este componente vienen desde la página de constancia, a la que se accede al momento de poner la asistencia a un evento de una persona.
+
+```js filename="VistaWeb.tsx"
+import React from 'react'
+
+const VistaWeb = ({data} : any) => {
+
+    return (
+        <div style={
+            {
+                display: 'flex',
+                flexDirection: 'column',
+                width: '60%',
+                margin: '0 auto',
+                fontFamily: 'Arial',
+                backgroundColor: 'white',
+            }
+        }>
+
+            <img src='/images/headerConstancia.jpg'></img>
+
+            <p style={{
+                textAlign: 'center',
+            }}>Otorga la presente constancia a:</p>
+
+            <h1 style={{
+                textAlign: 'center',
+            }}>{ data ? data[0] : '...' }</h1>
+
+            <p style={{
+                textAlign: 'center',
+            }}>
+                por asistir al evento:
+            </p>
+            <h1 style={{fontWeight: 'bold', textAlign:'center', textTransform: 'uppercase'}}>{ data ? data[1] : '...' }</h1>
+
+            <p style={{
+                textAlign: 'center',
+            }}> {lorem} </p>
+
+            <p style={{
+                textAlign: 'center',
+                textTransform: 'capitalize',
+                fontWeight: 'bold',
+            }}>{ data ? data[2] : '...' }</p>
+
+            <p style={{textAlign: 'center', fontWeight:'bold', marginTop: '10rem'}}>{ secretario }</p>
+            <p style={{textAlign: 'center', fontSize: '10px'}}>Secretario Politécnico "Ing. Jorge Matute Remus"</p>
+
+
+            <img src='/images/footerConstancia.jpg' style={{
+                justifySelf: 'end',
+            }}></img>
+        </div>
+    )
+}
+
+export default VistaWeb
+```
+
+## Referencias
+[Libreria React-pdf](https://react-pdf.org/)
+
+[Video de ejemplo](https://www.youtube.com/watch?v=D05ptoe7brY)
